@@ -125,33 +125,24 @@ document.addEventListener('DOMContentLoaded', initCountdown);
 // BACKGROUND MUSIC — 想见你
 // ==========================================
 
-let bgMusic = null;
 let musicPlaying = false;
 
 function startMusic() {
     if (musicPlaying) return;
-    if (!bgMusic) {
-        bgMusic = new Audio('audio/xiang-jian-ni.mp3');
-        bgMusic.loop = true;
-        bgMusic.volume = 0.4;
-    }
-    bgMusic.play().then(() => {
-        musicPlaying = true;
-        document.querySelectorAll('.music-btn').forEach(btn => {
-            btn.classList.add('playing');
-            btn.textContent = '🎶';
-        });
-    }).catch(() => {});
+    const audio = document.getElementById('bg-music');
+    audio.volume = 0.4;
+    audio.play();
+    musicPlaying = true;
+    document.querySelectorAll('.music-btn').forEach(btn => {
+        btn.classList.add('playing');
+        btn.textContent = '🎶';
+    });
 }
 
 function toggleMusic() {
-    if (!bgMusic) {
-        startMusic();
-        return;
-    }
-
+    const audio = document.getElementById('bg-music');
     if (musicPlaying) {
-        bgMusic.pause();
+        audio.pause();
         musicPlaying = false;
         document.querySelectorAll('.music-btn').forEach(btn => {
             btn.classList.remove('playing');
