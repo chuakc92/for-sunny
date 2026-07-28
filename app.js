@@ -122,6 +122,24 @@ function tapLocked() {
 document.addEventListener('DOMContentLoaded', initCountdown);
 
 // ==========================================
+// STICKER TAP ANIMATIONS
+// ==========================================
+
+function tapSticker(el, type) {
+    // Remove any existing animation class
+    el.classList.remove('sticker-anim-grow', 'sticker-anim-backflip', 'sticker-anim-angry');
+    // Force reflow so animation restarts if tapped again
+    void el.offsetWidth;
+    el.classList.add('sticker-anim-' + type);
+
+    // Remove class after animation ends so it can replay
+    el.addEventListener('animationend', function handler() {
+        el.classList.remove('sticker-anim-' + type);
+        el.removeEventListener('animationend', handler);
+    });
+}
+
+// ==========================================
 // BACKGROUND MUSIC — 想见你
 // ==========================================
 
@@ -252,12 +270,24 @@ const envelopes = [
         id: 'landing-tx',
         emoji: '🤠',
         title: "You Land in Texas",
-        subtitle: 'Open this one LAST ✨',
-        question: "What do you call me? (say it in Korean...)",
-        hint: "It's what you started calling me 🥹",
+        subtitle: 'Almost the last one... ✨',
+        question: "What am I to you? (hint: it rhymes with 'honorary Korean'...)",
+        hint: "Just kidding. What did our paths keep doing? 🥹",
+        answers: ['crossing', 'crossed', 'cross'],
+        isFinal: false,
+        content: 'getLandingContent'
+    },
+    {
+        id: 'with-me',
+        emoji: '💗',
+        title: "You're With Me",
+        subtitle: 'Hand me your phone. 🤭',
+        question: "Say it to my face. What do you call me? ☺️",
+        hint: "이제 시작이야...",
         answers: ['자기야', 'jagiya', 'jagi', '자기'],
         isFinal: true,
-        content: 'getLandingContent'
+        isSecret: true,
+        content: 'getWithMeContent'
     }
 ];
 
@@ -288,14 +318,15 @@ function renderEnvelopes() {
     const grid = document.querySelector('.envelope-grid');
     grid.innerHTML = '';
 
-    const allOthersOpened = envelopes
-        .filter(e => !e.isFinal)
-        .every(e => openedEnvelopes.includes(e.id));
-
     envelopes.forEach(env => {
-        // Hide final envelope until all others opened
-        if (env.isFinal && !allOthersOpened && !openedEnvelopes.includes(env.id)) {
-            return;
+        // Hide final/secret envelope until all others opened
+        if (env.isFinal) {
+            const allOthersOpened = envelopes
+                .filter(e => !e.isFinal)
+                .every(e => openedEnvelopes.includes(e.id));
+            if (!allOthersOpened && !openedEnvelopes.includes(env.id)) {
+                return;
+            }
         }
 
         const card = document.createElement('div');
@@ -303,7 +334,7 @@ function renderEnvelopes() {
         if (openedEnvelopes.includes(env.id)) card.classList.add('opened');
         if (env.isFinal) {
             card.classList.add('final-envelope');
-            if (allOthersOpened && !openedEnvelopes.includes(env.id)) {
+            if (!openedEnvelopes.includes(env.id)) {
                 card.classList.add('glow');
             }
         }
@@ -1189,6 +1220,43 @@ function getLandingContent() {
         <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff0f5,#ffeef8); border-radius:16px;">
             <div style="font-family:'Caveat',cursive; font-size:1.5rem; color:#ff6b9d;">To be continued... in person ☺️</div>
         </div>
+    `;
+}
+
+function getWithMeContent() {
+    return `
+        <h2 class="section-title">이제 시작이야 💗</h2>
+        <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.3rem; color:#8b6b7a; margin-bottom:1.5rem;">This is just the beginning.</p>
+        <div class="message-text">
+            <p>자기야...</p>
+            <p>If you're reading this, it means I'm right next to you. Actually here. Not 14 hours away. Not behind a screen. Not a voice message you replay at 4am.</p>
+            <p>Me. Right here.</p>
+            <p>I've been waiting for this moment since June 11th. Every text, every voice note, every late night, every "go to sleep!" that I ignored, every picture I replayed, every sticker you made of me — it was all leading to right now.</p>
+            <p>I don't know if I'm shaking or if you are. Probably both.</p>
+            <p>I just want you to know: you are so much more beautiful in person. Your voice is so much softer. And my hands finally have somewhere to be.</p>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/with-you.m4a')">▶</button>
+            <div class="audio-info">
+                <div class="audio-title">For you, right now ☺️</div>
+                <div class="audio-subtitle">Press play. I'll wait.</div>
+            </div>
+            <div class="audio-waves">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+        </div>
+        <div class="message-text">
+            <p>72 days. Thousands of messages. One timezone away. And now zero distance between us.</p>
+            <p>Thank you for saying 자기야 to my face. I've been dreaming about hearing that since July.</p>
+            <p>이제 시작이야. This is just the beginning. And I'm so glad it's with you.</p>
+        </div>
+        <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff0f5,#ffeef8); border-radius:16px;">
+            <div style="font-family:'Caveat',cursive; font-size:1.2rem; color:#ff6b9d; margin-bottom:0.5rem;">Our first item ✓</div>
+            <div style="font-size:1rem; color:#4a3040; text-decoration:line-through; opacity:0.7;">☐ Our first hug at the airport</div>
+            <div style="font-size:1rem; color:#4a3040; font-weight:700; margin-top:0.25rem;">☑️ Our first hug. ☺️</div>
+        </div>
+        <div class="message-signature">— Your KC. Finally here. ❤️</div>
     `;
 }
 

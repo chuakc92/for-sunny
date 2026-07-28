@@ -918,6 +918,97 @@ body {
     to { opacity: 1; transform: translateX(0); }
 }
 
+/* Floating stickers on locked page */
+.floating-sticker {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    z-index: 3;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+}
+
+.floating-sticker:active {
+    transform: scale(0.9);
+}
+
+.sticker-1 {
+    top: 20%;
+    left: 25%;
+    animation: stickerRock1 4s ease-in-out infinite;
+}
+
+.sticker-2 {
+    top: 35%;
+    right: 25%;
+    animation: stickerRock2 5s ease-in-out infinite;
+}
+
+.sticker-3 {
+    bottom: 18%;
+    left: 30%;
+    animation: stickerRock3 3.5s ease-in-out infinite;
+}
+
+@keyframes stickerRock1 {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+}
+
+@keyframes stickerRock2 {
+    0%, 100% { transform: rotate(2deg) translateY(0); }
+    50% { transform: rotate(-2deg) translateY(-5px); }
+}
+
+@keyframes stickerRock3 {
+    0%, 100% { transform: rotate(2deg); }
+    50% { transform: rotate(-4deg); }
+}
+
+/* Tap animations for stickers */
+.sticker-anim-grow {
+    animation: stickerGrow 0.6s ease-in-out !important;
+}
+
+.sticker-anim-backflip {
+    animation: stickerBackflip 0.8s ease-in-out !important;
+}
+
+.sticker-anim-angry {
+    animation: stickerAngry 0.5s ease-in-out !important;
+}
+
+@keyframes stickerGrow {
+    0% { transform: scale(1); }
+    40% { transform: scale(2.2) rotate(5deg); }
+    70% { transform: scale(0.8) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes stickerBackflip {
+    0% { transform: rotateY(0deg) translateY(0); }
+    30% { transform: rotateY(180deg) translateY(-40px); }
+    60% { transform: rotateY(360deg) translateY(-60px); }
+    80% { transform: rotateY(360deg) translateY(10px); }
+    100% { transform: rotateY(360deg) translateY(0); }
+}
+
+@keyframes stickerAngry {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    10% { transform: translateX(-8px) rotate(-5deg); }
+    20% { transform: translateX(8px) rotate(5deg); }
+    30% { transform: translateX(-6px) rotate(-4deg); }
+    40% { transform: translateX(6px) rotate(4deg); }
+    50% { transform: translateX(-4px) rotate(-3deg); }
+    60% { transform: translateX(4px) rotate(3deg); }
+    70% { transform: translateX(-3px) rotate(-2deg); }
+    80% { transform: translateX(3px) rotate(2deg); }
+    90% { transform: translateX(-1px) rotate(-1deg); }
+}
+
 /* Stagger animation delays for envelope cards */
 .envelope-card:nth-child(1) { animation-delay: 0.05s; }
 .envelope-card:nth-child(2) { animation-delay: 0.1s; }
