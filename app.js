@@ -61,27 +61,21 @@ function initCountdown() {
     // Change DEV_LOCK to false when ready to use the real timer
     const DEV_LOCK = true;
 
-    if (DEV_LOCK) {
-        document.getElementById('locked-page').classList.remove('hidden');
-        document.getElementById('landing').classList.add('hidden');
-        updateCountdownTimer();
-        setInterval(updateCountdownTimer, 1000);
-        return;
-    }
+    // Show locked page immediately — no waiting
+    document.getElementById('locked-page').classList.remove('hidden');
+    document.getElementById('landing').classList.add('hidden');
+    updateCountdownTimer();
+    setInterval(updateCountdownTimer, 1000);
 
-    // Fetch real time from server first
+    if (DEV_LOCK) return;
+
+    // When not dev-locked, fetch server time and unlock if past date
     fetchServerTime().then(() => {
         const now = getTrueNow();
         if (now >= UNLOCK_TIMESTAMP) {
             document.getElementById('locked-page').classList.add('hidden');
             document.getElementById('landing').classList.remove('hidden');
-            return;
         }
-
-        document.getElementById('locked-page').classList.remove('hidden');
-        document.getElementById('landing').classList.add('hidden');
-        updateCountdownTimer();
-        setInterval(updateCountdownTimer, 1000);
     });
 }
 
@@ -90,7 +84,7 @@ function updateCountdownTimer() {
     const diff = UNLOCK_TIMESTAMP - now;
 
     if (diff <= 0) {
-        location.reload();
+        document.getElementById('countdown-timer').textContent = '0d 0h 0m 0s';
         return;
     }
 
@@ -112,9 +106,9 @@ function tapLocked() {
     const msg = lockedMessages[lockedTapCount % lockedMessages.length];
     lockedTapCount++;
 
-    // Start music on first interaction (iOS requires user gesture for audio)
-    if (!musicPlaying && !bgMusic) {
-        toggleMusic();
+    // Start music on first tap (iOS requires audio in user gesture handler)
+    if (!musicPlaying) {
+        startMusic();
     }
 
     // Reset animation
@@ -134,26 +128,37 @@ document.addEventListener('DOMContentLoaded', initCountdown);
 let bgMusic = null;
 let musicPlaying = false;
 
-function toggleMusic() {
-    const btns = document.querySelectorAll('.music-btn');
-
+function startMusic() {
+    if (musicPlaying) return;
     if (!bgMusic) {
         bgMusic = new Audio('audio/xiang-jian-ni.mp3');
         bgMusic.loop = true;
         bgMusic.volume = 0.4;
     }
+    bgMusic.play().then(() => {
+        musicPlaying = true;
+        document.querySelectorAll('.music-btn').forEach(btn => {
+            btn.classList.add('playing');
+            btn.textContent = '🎶';
+        });
+    }).catch(() => {});
+}
+
+function toggleMusic() {
+    if (!bgMusic) {
+        startMusic();
+        return;
+    }
 
     if (musicPlaying) {
         bgMusic.pause();
         musicPlaying = false;
-        btns.forEach(btn => { btn.classList.remove('playing'); btn.textContent = '🎵'; });
-    } else {
-        bgMusic.play().then(() => {
-            musicPlaying = true;
-            btns.forEach(btn => { btn.classList.add('playing'); btn.textContent = '🎶'; });
-        }).catch(() => {
-            // iOS may block — need user gesture, which we have from the tap
+        document.querySelectorAll('.music-btn').forEach(btn => {
+            btn.classList.remove('playing');
+            btn.textContent = '🎵';
         });
+    } else {
+        startMusic();
     }
 }
 
