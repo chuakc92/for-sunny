@@ -6,7 +6,7 @@
 // COUNTDOWN LOCK — Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_TIMESTAMP = 1787583600000; // Aug 23, 2026 00:00:00 KST in milliseconds (UTC: Aug 22 15:00:00)
+const UNLOCK_TIMESTAMP = 1787410800000; // Aug 23, 2026 00:00:00 KST (= Aug 22 15:00:00 UTC)
 
 // Server time offset to prevent phone clock cheating
 let serverTimeOffset = 0;
