@@ -77,6 +77,11 @@ function tapLocked() {
     const msg = lockedMessages[lockedTapCount % lockedMessages.length];
     lockedTapCount++;
 
+    // Start music on first interaction (iOS requires user gesture for audio)
+    if (!musicPlaying && !bgMusic) {
+        toggleMusic();
+    }
+
     // Reset animation
     msgEl.style.animation = 'none';
     void msgEl.offsetWidth;
@@ -239,6 +244,10 @@ let quizAnswered = 0;
 // ==========================================
 
 function enterApp() {
+    // Start music on first interaction if not already playing
+    if (!musicPlaying) {
+        toggleMusic();
+    }
     document.getElementById('landing').classList.add('hidden');
     document.getElementById('envelopes').classList.remove('hidden');
     renderEnvelopes();
