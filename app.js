@@ -6,7 +6,30 @@
 // COUNTDOWN LOCK — Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_DATE = new Date('2026-08-23T00:00:00+09:00'); // Aug 23 midnight KST (Korea time)
+const UNLOCK_TIMESTAMP = 1787583600000; // Aug 23, 2026 00:00:00 KST in milliseconds (UTC: Aug 22 15:00:00)
+
+// Server time offset to prevent phone clock cheating
+let serverTimeOffset = 0;
+
+async function fetchServerTime() {
+    try {
+        // Use WorldTimeAPI to get actual UTC time
+        const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Seoul');
+        if (response.ok) {
+            const data = await response.json();
+            const serverNow = new Date(data.datetime).getTime();
+            const localNow = Date.now();
+            serverTimeOffset = serverNow - localNow;
+        }
+    } catch (e) {
+        // If offline, fall back to device time (acceptable — she'll be on a plane)
+        serverTimeOffset = 0;
+    }
+}
+
+function getTrueNow() {
+    return Date.now() + serverTimeOffset;
+}
 
 const lockedMessages = [
     "Patience, 자기야 😤 You're not allowed in yet!",
@@ -34,27 +57,27 @@ const lockedMessages = [
 let lockedTapCount = 0;
 
 function initCountdown() {
-    const now = new Date();
-    if (now >= UNLOCK_DATE) {
-        // Unlocked! Show the real landing page
-        document.getElementById('locked-page').classList.add('hidden');
-        document.getElementById('landing').classList.remove('hidden');
-        return;
-    }
+    // Fetch real time from server first
+    fetchServerTime().then(() => {
+        const now = getTrueNow();
+        if (now >= UNLOCK_TIMESTAMP) {
+            document.getElementById('locked-page').classList.add('hidden');
+            document.getElementById('landing').classList.remove('hidden');
+            return;
+        }
 
-    // Still locked — show countdown
-    document.getElementById('locked-page').classList.remove('hidden');
-    document.getElementById('landing').classList.add('hidden');
-    updateCountdownTimer();
-    setInterval(updateCountdownTimer, 1000);
+        document.getElementById('locked-page').classList.remove('hidden');
+        document.getElementById('landing').classList.add('hidden');
+        updateCountdownTimer();
+        setInterval(updateCountdownTimer, 1000);
+    });
 }
 
 function updateCountdownTimer() {
-    const now = new Date();
-    const diff = UNLOCK_DATE - now;
+    const now = getTrueNow();
+    const diff = UNLOCK_TIMESTAMP - now;
 
     if (diff <= 0) {
-        // Just unlocked! Refresh the page to show landing
         location.reload();
         return;
     }
