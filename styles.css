@@ -154,6 +154,37 @@ body {
     animation: fadeInUp 0.3s ease-out;
 }
 
+.music-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #ffb6c1;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    -webkit-appearance: none;
+    transition: transform 0.2s;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.music-btn:active {
+    transform: scale(0.9);
+}
+
+.music-btn.playing {
+    background: linear-gradient(135deg, #fff0f5, #ffeef8);
+    border-color: #ff6b9d;
+    animation: pulse 2s ease-in-out infinite;
+}
+
 .floating-hearts {
     position: absolute;
     top: 0;

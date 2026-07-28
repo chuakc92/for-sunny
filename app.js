@@ -88,6 +88,36 @@ function tapLocked() {
 document.addEventListener('DOMContentLoaded', initCountdown);
 
 // ==========================================
+// BACKGROUND MUSIC — 想见你
+// ==========================================
+
+let bgMusic = null;
+let musicPlaying = false;
+
+function toggleMusic() {
+    const btns = document.querySelectorAll('.music-btn');
+
+    if (!bgMusic) {
+        bgMusic = new Audio('audio/xiang-jian-ni.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.4;
+    }
+
+    if (musicPlaying) {
+        bgMusic.pause();
+        musicPlaying = false;
+        btns.forEach(btn => { btn.classList.remove('playing'); btn.textContent = '🎵'; });
+    } else {
+        bgMusic.play().then(() => {
+            musicPlaying = true;
+            btns.forEach(btn => { btn.classList.add('playing'); btn.textContent = '🎶'; });
+        }).catch(() => {
+            // iOS may block — need user gesture, which we have from the tap
+        });
+    }
+}
+
+// ==========================================
 // ENVELOPE DATA
 // ==========================================
 
