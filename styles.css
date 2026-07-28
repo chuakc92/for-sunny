@@ -936,13 +936,13 @@ body {
 }
 
 .sticker-1 {
-    top: 12%;
+    top: 18%;
     left: 8%;
     animation: stickerRock1 4s ease-in-out infinite;
 }
 
 .sticker-2 {
-    top: 35%;
+    top: 50%;
     right: 6%;
     animation: stickerRock2 5s ease-in-out infinite;
 }
