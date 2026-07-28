@@ -942,7 +942,7 @@ body {
 }
 
 .sticker-2 {
-    top: 50%;
+    top: 55%;
     right: 6%;
     animation: stickerRock2 5s ease-in-out infinite;
 }
