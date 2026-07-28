@@ -6,7 +6,7 @@
 // COUNTDOWN LOCK — Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_DATE = new Date('2025-08-23T00:00:00+09:00'); // Aug 23 midnight KST (Korea time)
+const UNLOCK_DATE = new Date('2026-08-23T00:00:00+09:00'); // Aug 23 midnight KST (Korea time)
 
 const lockedMessages = [
     "Patience, 자기야 😤 You're not allowed in yet!",
