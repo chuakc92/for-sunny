@@ -1,48 +1,12 @@
 // Service Worker for offline support
-const CACHE_NAME = 'sunny-open-when-v1';
+// Network-first strategy: always get fresh content when online,
+// fall back to cache when offline (airplane mode)
+const CACHE_NAME = 'sunny-open-when-v2';
 
-// Cache everything on install
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll([
-                './',
-                './index.html',
-                './styles.css',
-                './app.js',
-                './confetti.min.js'
-            ]);
-        })
-    );
     self.skipWaiting();
 });
 
-// Serve from cache, fall back to network
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            if (response) return response;
-            return fetch(event.request).then((fetchResponse) => {
-                // Cache new resources as they're fetched
-                if (fetchResponse && fetchResponse.status === 200) {
-                    const responseClone = fetchResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return fetchResponse;
-            }).catch(() => {
-                // If both cache and network fail, return offline page
-                return new Response('Offline - please reconnect to load', {
-                    status: 503,
-                    headers: { 'Content-Type': 'text/plain' }
-                });
-            });
-        })
-    );
-});
-
-// Clean up old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -53,4 +17,21 @@ self.addEventListener('activate', (event) => {
         })
     );
     self.clients.claim();
+});
+
+// Network-first: try network, cache the response, fall back to cache
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        fetch(event.request).then((response) => {
+            if (response && response.status === 200) {
+                const clone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, clone);
+                });
+            }
+            return response;
+        }).catch(() => {
+            return caches.match(event.request);
+        })
+    );
 });
