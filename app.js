@@ -57,6 +57,18 @@ const lockedMessages = [
 let lockedTapCount = 0;
 
 function initCountdown() {
+    // HARD LOCK — always show locked page during development
+    // Change DEV_LOCK to false when ready to use the real timer
+    const DEV_LOCK = true;
+
+    if (DEV_LOCK) {
+        document.getElementById('locked-page').classList.remove('hidden');
+        document.getElementById('landing').classList.add('hidden');
+        updateCountdownTimer();
+        setInterval(updateCountdownTimer, 1000);
+        return;
+    }
+
     // Fetch real time from server first
     fetchServerTime().then(() => {
         const now = getTrueNow();
