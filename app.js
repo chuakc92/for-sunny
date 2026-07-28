@@ -3,6 +3,91 @@
    ========================================== */
 
 // ==========================================
+// COUNTDOWN LOCK — Unlocks Aug 23, 2025
+// ==========================================
+
+const UNLOCK_DATE = new Date('2025-08-23T00:00:00+09:00'); // Aug 23 midnight KST (Korea time)
+
+const lockedMessages = [
+    "Patience, 자기야 😤 You're not allowed in yet!",
+    "Nice try, lady! Come back on August 23rd 🥹",
+    "I said NO 😤😤😤 ...but I miss you too",
+    "Still locked! Go practice violin or something 🎻",
+    "The kids' version of patience isn't available either 🔥",
+    "Hey!! Did I say you could open this?! 😤",
+    "You're as impatient as me at 3am... go to sleep!!",
+    "Hands OFF the lock 🔒 (get it? like my pockets? 🥹)",
+    "Not yet!! But I promise it's worth the wait ☺️",
+    "🙄 Fine. Here's a sneak peek: ████████. Happy?",
+    "Come back and tap me when you've leveled up enough to handle this content 😏",
+    "I'm not opening until you're on that plane ✈️",
+    "You're gonna wear me out before August 23rd 😤",
+    "If you tap me one more time I'm adding MORE days 😤😤",
+    "Okay that one was cute but still NO 🥹",
+    "The countdown is real, the lock is real, my love is real ☺️",
+    "Go eat some buldak and come back later 🔥",
+    "Is this how you treat all your locks?! I feel used 😭",
+    "나중에!! (that means LATER) 😤",
+    "I can hear you tapping from Texas 🙄"
+];
+
+let lockedTapCount = 0;
+
+function initCountdown() {
+    const now = new Date();
+    if (now >= UNLOCK_DATE) {
+        // Unlocked! Show the real landing page
+        document.getElementById('locked-page').classList.add('hidden');
+        document.getElementById('landing').classList.remove('hidden');
+        return;
+    }
+
+    // Still locked — show countdown
+    document.getElementById('locked-page').classList.remove('hidden');
+    document.getElementById('landing').classList.add('hidden');
+    updateCountdownTimer();
+    setInterval(updateCountdownTimer, 1000);
+}
+
+function updateCountdownTimer() {
+    const now = new Date();
+    const diff = UNLOCK_DATE - now;
+
+    if (diff <= 0) {
+        // Just unlocked! Refresh the page to show landing
+        location.reload();
+        return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    const timerEl = document.getElementById('countdown-timer');
+    if (days > 0) {
+        timerEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    } else {
+        timerEl.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    }
+}
+
+function tapLocked() {
+    const msgEl = document.getElementById('locked-message');
+    const msg = lockedMessages[lockedTapCount % lockedMessages.length];
+    lockedTapCount++;
+
+    // Reset animation
+    msgEl.style.animation = 'none';
+    void msgEl.offsetWidth;
+    msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+    msgEl.textContent = msg;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initCountdown);
+
+// ==========================================
 // ENVELOPE DATA
 // ==========================================
 

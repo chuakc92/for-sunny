@@ -120,6 +120,40 @@ body {
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
 }
 
+.locked-btn {
+    background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+    color: white;
+    border: none;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    margin: 1.5rem auto;
+    display: block;
+    animation: shake-subtle 3s ease-in-out infinite;
+}
+
+.locked-btn:active {
+    transform: scale(0.9) rotate(-5deg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.locked-message {
+    font-size: 0.95rem;
+    color: #8b6b7a;
+    font-weight: 600;
+    min-height: 3rem;
+    max-width: 300px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 1.5;
+    animation: fadeInUp 0.3s ease-out;
+}
+
 .floating-hearts {
     position: absolute;
     top: 0;

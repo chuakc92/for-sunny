@@ -15,15 +15,33 @@
 </head>
 <body>
     <div class="app">
-        <!-- Landing Page -->
-        <section id="landing" class="landing">
+        <!-- Locked Countdown Page (shows before Aug 23) -->
+        <section id="locked-page" class="landing">
+            <div class="landing-content">
+                <div class="sun-icon">☀️</div>
+                <h1 class="landing-title">For My <span class="highlight">Sunny</span></h1>
+                <p class="landing-subtitle">Something's waiting for you...</p>
+                <div class="countdown-display">
+                    <div id="countdown-timer" style="font-family:'Caveat',cursive; font-size:2.2rem; color:#ff6b9d; font-weight:700;"></div>
+                    <span id="countdown-label" style="font-size:0.85rem;">until you can open this</span>
+                </div>
+                <button class="locked-btn" id="locked-btn" onclick="tapLocked()">🔒</button>
+                <p class="locked-message" id="locked-message"></p>
+            </div>
+            <div class="floating-hearts">
+                <span>💗</span><span>🌸</span><span>✨</span><span>💗</span><span>☀️</span>
+            </div>
+        </section>
+
+        <!-- Landing Page (shows on/after Aug 23) -->
+        <section id="landing" class="landing hidden">
             <div class="landing-content">
                 <div class="sun-icon">☀️</div>
                 <h1 class="landing-title">For My <span class="highlight">Sunny</span></h1>
                 <p class="landing-subtitle">June 11 → August 23</p>
                 <p class="landing-desc">A little something to keep you company on your flight home to me ✈️</p>
                 <div class="countdown-display">
-                    <span id="countdown-text">The wait is almost over...</span>
+                    <span id="countdown-text">The wait is over ☺️</span>
                 </div>
                 <button class="enter-btn" onclick="enterApp()">Open ☺️</button>
             </div>
