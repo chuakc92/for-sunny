@@ -936,20 +936,20 @@ body {
 }
 
 .sticker-1 {
-    top: 20%;
-    left: 25%;
+    top: 12%;
+    left: 8%;
     animation: stickerRock1 4s ease-in-out infinite;
 }
 
 .sticker-2 {
     top: 35%;
-    right: 25%;
+    right: 6%;
     animation: stickerRock2 5s ease-in-out infinite;
 }
 
 .sticker-3 {
     bottom: 18%;
-    left: 30%;
+    left: 12%;
     animation: stickerRock3 3.5s ease-in-out infinite;
 }
 
