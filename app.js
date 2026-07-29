@@ -173,7 +173,7 @@ function tapLocked() {
         msgEl.style.animation = 'none';
         void msgEl.offsetWidth;
         msgEl.style.animation = 'fadeInUp 0.3s ease-out';
-        msgEl.textContent = "Fine. We're starting over. 🙄";
+        msgEl.textContent = "Hehe kidding! We're starting over. 🙄";
         return;
     }
 
