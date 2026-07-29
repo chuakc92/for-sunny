@@ -39,7 +39,7 @@ const lockedMessages = [
     "The kids' version of patience isn't available either 🔥",
     "Hey!! Did I say you could open this?! 😤",
     "You're as impatient as me at 3am... go to sleep!!",
-    "Hands OFF the lock 🔒 (get it? like my pockets? 🥹)",
+    "Hands OFF the lock 🔒",
     "Not yet!! But I promise it's worth the wait ☺️",
     "🙄 Fine. Here's a sneak peek: ████████. Happy?",
     "Come back and tap me when you've leveled up enough to handle this content 😏",
@@ -50,8 +50,19 @@ const lockedMessages = [
     "The countdown is real, the lock is real, my love is real ☺️",
     "Go eat some buldak and come back later 🔥",
     "Is this how you treat all your locks?! I feel used 😭",
-    "나중에!! (that means LATER) 😤",
-    "I can hear you tapping from Texas 🙄"
+    "나중에!! 😤",
+    "I can hear you tapping from Texas 🙄",
+    "Hehe.. you haven't seen this one yet have you? ☺️ Still.. no...",
+    "Yes I did add extra ones, just to make 자기야 smile ☺️ but she's too impatient!!",
+    "Tap me again if you're thinking of me ☺️",
+    "Tap me again if you're NOT thinking of me... 🥹",
+    "Wow..... 😤😤😤 okay.. how about this...",
+    "Tap me again and you promise to send me that bikini picture hehehe...",
+    "NOW I'm excited!! 🔥",
+    "Okay.. you're so persistent.. lets try this.. tap me again if....",
+    "you....",
+    "Just really miss me and can't wait to see me ☺️",
+    "Aww... 자기야 ... I like you too ☺️"
 ];
 
 let lockedTapCount = 0;
@@ -103,13 +114,71 @@ function updateCountdownTimer() {
 
 function tapLocked() {
     const msgEl = document.getElementById('locked-message');
-    const msg = lockedMessages[lockedTapCount % lockedMessages.length];
-    lockedTapCount++;
+    const lockBtn = document.getElementById('locked-btn');
 
     // Start music on first tap (iOS requires audio in user gesture handler)
     if (!musicPlaying) {
         startMusic();
     }
+
+    // If she's cycled through all messages
+    if (lockedTapCount === lockedMessages.length) {
+        // Replace entire button with angry sticker
+        lockBtn.style.background = 'none';
+        lockBtn.style.border = 'none';
+        lockBtn.style.boxShadow = 'none';
+        lockBtn.style.width = '120px';
+        lockBtn.style.height = '120px';
+        lockBtn.innerHTML = '<img src="stickers/sticker3.webp" style="width:100%;height:100%;">';
+        lockBtn.classList.add('sticker-anim-angry');
+        msgEl.style.animation = 'none';
+        void msgEl.offsetWidth;
+        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+        msgEl.textContent = "HEY!! You're reading too fast!! I haven't added more messages yet!! 😤😤😤";
+        lockedTapCount++;
+        return;
+    }
+
+    // Require 5 taps on the sticker to reset
+    if (lockedTapCount > lockedMessages.length && lockedTapCount < lockedMessages.length + 5) {
+        const angryMsgs = [
+            "STOP TAPPING ME 😤😤😤",
+            "I'm SERIOUS!! Go away!! 😭",
+            "One more and I'll be mad!! 🙄",
+            "Okay fine I'll let you in... ",
+            "Hehe...Last one.... fine..."
+        ];
+        const idx = lockedTapCount - lockedMessages.length - 1;
+        msgEl.style.animation = 'none';
+        void msgEl.offsetWidth;
+        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+        msgEl.textContent = angryMsgs[idx];
+        lockBtn.classList.remove('sticker-anim-angry');
+        void lockBtn.offsetWidth;
+        lockBtn.classList.add('sticker-anim-angry');
+        lockedTapCount++;
+        return;
+    }
+
+    // After 5 taps on sticker, reset back to normal
+    if (lockedTapCount >= lockedMessages.length + 5) {
+        lockBtn.innerHTML = '🔒';
+        lockBtn.style.background = '';
+        lockBtn.style.border = '';
+        lockBtn.style.boxShadow = '';
+        lockBtn.style.width = '';
+        lockBtn.style.height = '';
+        lockBtn.classList.remove('sticker-anim-angry');
+        lockedTapCount = 0;
+        msgEl.style.animation = 'none';
+        void msgEl.offsetWidth;
+        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+        msgEl.textContent = "Fine. We're starting over. 🙄";
+        return;
+    }
+
+    const msg = lockedMessages[lockedTapCount % lockedMessages.length];
+    lockedTapCount++;
 
     // Reset animation
     msgEl.style.animation = 'none';
