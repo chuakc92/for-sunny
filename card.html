@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #d9c7bd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    padding: 20px;
+  }
+  /* wide landscape card ratio to match gift frame */
+  .card {
+    width: 820px;
+    height: 440px;
+    background: linear-gradient(160deg, #fff5ef 0%, #ffe9f0 55%, #fff0e6 100%);
+    border-radius: 0;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px 60px;
+  }
+  /* soft decorative blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0.5;
+  }
+  .blob1 { width: 160px; height: 160px; background: #ffd6e6; top: -50px; left: -40px; }
+  .blob2 { width: 130px; height: 130px; background: #ffe4c9; bottom: -40px; right: -30px; }
+  .blob3 { width: 90px; height: 90px; background: #ffe0ec; bottom: 90px; left: -30px; }
+
+  .sun {
+    font-size: 30px;
+    margin-bottom: 2px;
+    position: relative;
+  }
+  .cup {
+    font-size: 48px;
+    line-height: 1;
+    margin: 2px 0 10px;
+    position: relative;
+    filter: drop-shadow(0 8px 12px rgba(200,120,90,0.25));
+  }
+  .title {
+    font-family: 'Caveat', cursive;
+    font-size: 40px;
+    font-weight: 700;
+    color: #e26d8a;
+    line-height: 1.05;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .kor {
+    font-family: 'Gaegu', 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #b5677f;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .divider {
+    width: 54px;
+    height: 3px;
+    border-radius: 3px;
+    background: #f0b9c9;
+    margin: 0 auto 12px;
+    position: relative;
+  }
+  .sub {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #7a5a63;
+    font-weight: 600;
+    max-width: 420px;
+    position: relative;
+  }
+  .signoff {
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: #e26d8a;
+    margin-top: 14px;
+    position: relative;
+  }
+  .hearts {
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.6;
+  }
+  .h1 { top: 60px; right: 55px; }
+  .h2 { top: 120px; left: 50px; font-size: 13px; }
+  .h3 { bottom: 150px; right: 45px; font-size: 14px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+    <span class="hearts h1">💗</span>
+    <span class="hearts h2">🤍</span>
+    <span class="hearts h3">💗</span>
+
+    <div class="sun">☀️</div>
+    <div class="cup">☕️</div>
+    <div class="title">For my precious<br>little coffee addict</div>
+    <div class="kor">내 소중한 커피 중독자에게</div>
+    <div class="divider"></div>
+    <div class="sub">A little fuel to keep you going...<br>until I can bring it to you myself. 🥹</div>
+    <div class="signoff">— 자기야's KC ❤️</div>
+  </div>
+
+  <button onclick="downloadCard()"
+    style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    padding:16px 32px;border:none;border-radius:50px;background:#e26d8a;color:#fff;
+    font-family:sans-serif;font-size:18px;font-weight:700;cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,0.3);z-index:99;">
+    ⬇️ Download card as PNG
+  </button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    function downloadCard() {
+      const card = document.querySelector('.card');
+      html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'card-for-sunny.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>

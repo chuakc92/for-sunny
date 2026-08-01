@@ -918,6 +918,85 @@ body {
     to { opacity: 1; transform: translateX(0); }
 }
 
+/* Lock jitter animations for fake unlock */
+.lock-jitter {
+    animation: lockJitter 0.15s ease-in-out infinite !important;
+}
+
+.lock-jitter-hard {
+    animation: lockJitterHard 0.08s ease-in-out infinite !important;
+}
+
+.lock-crack {
+    animation: lockCrack 0.5s ease-out forwards !important;
+}
+
+@keyframes lockJitter {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    25% { transform: translateX(-2px) rotate(-1deg); }
+    75% { transform: translateX(2px) rotate(1deg); }
+}
+
+@keyframes lockJitterHard {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    20% { transform: translateX(-4px) rotate(-3deg); }
+    40% { transform: translateX(4px) rotate(3deg); }
+    60% { transform: translateX(-3px) rotate(-2deg); }
+    80% { transform: translateX(3px) rotate(2deg); }
+}
+
+@keyframes lockCrack {
+    0% { transform: scale(1) rotate(0); }
+    30% { transform: scale(1.2) rotate(-5deg); }
+    60% { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+/* Gift button */
+.gift-btn {
+    display: none;
+    width: max-content;
+    max-width: 80%;
+    margin: 1.25rem auto 0;
+    padding: 0.85rem 1.8rem;
+    background: linear-gradient(135deg, #ff6b9d, #ff8a80);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+    white-space: nowrap;
+}
+
+/* Stable visible state — permanent resting place */
+.gift-btn-visible {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Entrance animation — pops from the lock */
+.gift-btn-pop {
+    display: block;
+    pointer-events: auto;
+    transform-origin: center top;
+    animation: giftPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.gift-btn:active {
+    opacity: 0.85;
+}
+
+@keyframes giftPop {
+    0% { opacity: 0; transform: scale(0) translateY(-40px); }
+    55% { opacity: 1; transform: scale(1.15) translateY(4px); }
+    78% { transform: scale(0.95) translateY(-2px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
 /* Floating stickers on locked page */
 .floating-sticker {
     position: absolute;

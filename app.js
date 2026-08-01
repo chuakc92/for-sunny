@@ -160,8 +160,25 @@ function tapLocked() {
         return;
     }
 
-    // After 5 taps on sticker, reset back to normal
+    // After 5 taps on sticker, start fake unlock sequence (or just reset if already revealed)
     if (lockedTapCount >= lockedMessages.length + 5) {
+        if (localStorage.getItem('giftRevealed')) {
+            // Already seen — just reset
+            lockBtn.innerHTML = '🔒';
+            lockBtn.style.background = '';
+            lockBtn.style.border = '';
+            lockBtn.style.boxShadow = '';
+            lockBtn.style.width = '';
+            lockBtn.style.height = '';
+            lockBtn.classList.remove('sticker-anim-angry');
+            lockedTapCount = 0;
+            msgEl.style.animation = 'none';
+            void msgEl.offsetWidth;
+            msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+            msgEl.textContent = "Fine. We're starting over. 🙄";
+            return;
+        }
+        // Begin fake unlock — switch to unlock phase
         lockBtn.innerHTML = '🔒';
         lockBtn.style.background = '';
         lockBtn.style.border = '';
@@ -169,11 +186,51 @@ function tapLocked() {
         lockBtn.style.width = '';
         lockBtn.style.height = '';
         lockBtn.classList.remove('sticker-anim-angry');
-        lockedTapCount = 0;
+        lockedTapCount = -1; // enter unlock phase
         msgEl.style.animation = 'none';
         void msgEl.offsetWidth;
         msgEl.style.animation = 'fadeInUp 0.3s ease-out';
-        msgEl.textContent = "Hehe kidding! We're starting over. 🙄";
+        msgEl.textContent = "Wait... something's happening...";
+        return;
+    }
+
+    // Fake unlock tap sequence
+    if (lockedTapCount === -1) {
+        lockBtn.classList.add('lock-jitter');
+        msgEl.style.animation = 'none';
+        void msgEl.offsetWidth;
+        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+        msgEl.textContent = "🔓 Unlocking...";
+        lockedTapCount = -2;
+        return;
+    }
+    if (lockedTapCount === -2) {
+        lockBtn.classList.remove('lock-jitter');
+        lockBtn.classList.add('lock-jitter-hard');
+        msgEl.style.animation = 'none';
+        void msgEl.offsetWidth;
+        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+        msgEl.textContent = "🔓 Almost there...";
+        lockedTapCount = -3;
+        return;
+    }
+    if (lockedTapCount === -3) {
+        lockBtn.classList.remove('lock-jitter-hard');
+        lockBtn.classList.add('lock-crack');
+        lockBtn.innerHTML = '🔓';
+        localStorage.setItem('giftRevealed', 'true');
+        msgEl.style.animation = 'none';
+        void msgEl.offsetWidth;
+        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
+        msgEl.textContent = "I couldn't wait until August 23rd.. so here's something for you in the mean time ☺️";
+        // Pop the gift button out of the lock
+        showGiftButton(lockBtn);
+        // Reset state after a moment
+        setTimeout(() => {
+            lockBtn.classList.remove('lock-crack');
+            lockBtn.innerHTML = '🔒';
+            lockedTapCount = 0;
+        }, 2000);
         return;
     }
 
@@ -188,7 +245,46 @@ function tapLocked() {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', initCountdown);
+document.addEventListener('DOMContentLoaded', () => {
+    initCountdown();
+    // Show gift button if already revealed
+    if (localStorage.getItem('giftRevealed')) {
+        showGiftButton(null, true);
+    }
+});
+
+// ==========================================
+// GIFT BUTTON
+// ==========================================
+
+function showGiftButton(lockBtn, instant) {
+    // Don't duplicate
+    if (document.getElementById('gift-btn')) return;
+
+    const btn = document.createElement('a');
+    btn.id = 'gift-btn';
+    btn.href = 'https://sodagift.com/ko/welcome/gift-links/2222657?t=0Ke6OOITWwCH3jHWbjN8';
+    btn.target = '_blank';
+    btn.rel = 'noopener';
+    btn.className = 'gift-btn';
+    btn.textContent = '🎁 Open me';
+
+    const container = document.querySelector('#locked-page .landing-content');
+    container.appendChild(btn);
+
+    if (instant) {
+        // Already revealed — just show it in place
+        btn.classList.add('gift-btn-visible');
+    } else {
+        // Pop from lock button position
+        btn.classList.add('gift-btn-pop');
+        // After animation, settle in place
+        setTimeout(() => {
+            btn.classList.remove('gift-btn-pop');
+            btn.classList.add('gift-btn-visible');
+        }, 600);
+    }
+}
 
 // ==========================================
 // STICKER TAP ANIMATIONS
