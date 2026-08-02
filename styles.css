@@ -154,6 +154,77 @@ body {
     animation: fadeInUp 0.3s ease-out;
 }
 
+.button-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+}
+
+.checkin-btn {
+    display: block;
+    margin: 0;
+    padding: 0.85rem 2rem;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ff6b9d, #ff8a80);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(255, 107, 157, 0.3);
+    -webkit-appearance: none;
+    appearance: none;
+    transition: opacity 0.2s;
+}
+
+.checkin-btn:active {
+    opacity: 0.85;
+}
+
+.checkin-response {
+    display: none;
+    margin: 0.9rem auto 0;
+    max-width: 300px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #8b6b7a;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.checkin-response.show {
+    display: block;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Button tap feedback */
+.btn-pop-feedback {
+    animation: btnPop 0.4s ease;
+}
+
+@keyframes btnPop {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+}
+
+.float-heart {
+    position: fixed;
+    font-size: 1.4rem;
+    pointer-events: none;
+    z-index: 200;
+    animation: floatHeart 1s ease-out forwards;
+}
+
+@keyframes floatHeart {
+    0% { opacity: 0; transform: translateY(0) scale(0.5); }
+    30% { opacity: 1; transform: translateY(-22px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-64px) scale(1); }
+}
+
 .music-btn {
     position: fixed;
     bottom: 1.5rem;
@@ -957,7 +1028,7 @@ body {
     display: none;
     width: max-content;
     max-width: 80%;
-    margin: 1.25rem auto 0;
+    margin: 0;
     padding: 0.85rem 1.8rem;
     background: linear-gradient(135deg, #ff6b9d, #ff8a80);
     color: white;

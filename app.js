@@ -247,11 +247,124 @@ function tapLocked() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
+    initCheckin();
     // Show gift button if already revealed
     if (localStorage.getItem('giftRevealed')) {
         showGiftButton(null, true);
     }
 });
+
+// ==========================================
+// TIME-AWARE CHECK-IN BUTTON (Good morning / Goodnight)
+// ==========================================
+
+const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx_eLVwB3zXsDFRAkVmLu8y9kn4dPVHubBmasXd8koaG9ZNPte0ZgLwmXl0LtA5qnizeA/exec';
+
+// ==========================================
+// OPTIONAL ON-SCREEN MESSAGES (leave arrays empty for no message)
+// To add messages, just put strings in these arrays, e.g.:
+//   morning: ["Good morning 자기야 ☀️", "Did you sleep well? 🥹"]
+// If an array is empty, tapping just does the cute animation with no text.
+// ==========================================
+const checkinMessages = {
+    morning: [],
+    night: [],
+    day: []
+};
+
+// Optional messages for the gift "Open me" button (leave empty for none)
+const giftMessages = [];
+
+// Small delayed feedback so buttons don't feel dead
+function buttonFeedback(btnEl, messagePool) {
+    setTimeout(() => {
+        // Button pop
+        btnEl.classList.remove('btn-pop-feedback');
+        void btnEl.offsetWidth;
+        btnEl.classList.add('btn-pop-feedback');
+        // Floating heart
+        spawnHeart(btnEl);
+        // Optional message
+        if (messagePool && messagePool.length) {
+            const respEl = document.getElementById('checkin-response');
+            if (respEl) {
+                const msg = messagePool[Math.floor(Math.random() * messagePool.length)];
+                respEl.textContent = msg;
+                respEl.classList.remove('show');
+                void respEl.offsetWidth;
+                respEl.classList.add('show');
+                clearTimeout(respEl._hideTimer);
+                respEl._hideTimer = setTimeout(() => respEl.classList.remove('show'), 5000);
+            }
+        }
+    }, 0);
+}
+
+function spawnHeart(btnEl) {
+    const rect = btnEl.getBoundingClientRect();
+    const heart = document.createElement('span');
+    heart.className = 'float-heart';
+    heart.textContent = '💗';
+    heart.style.left = (rect.left + rect.width / 2 - 11) + 'px';
+    heart.style.top = (rect.top - 8) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1000);
+}
+
+function getKSTHour() {
+    try {
+        const kst = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+        return kst.getHours();
+    } catch (e) {
+        return new Date().getHours();
+    }
+}
+
+function getPeriod() {
+    const h = getKSTHour();
+    if (h >= 4 && h < 12) return 'morning';
+    if (h >= 20 || h < 4) return 'night';
+    return 'day';
+}
+
+function initCheckin() {
+    const btn = document.getElementById('checkin-btn');
+    if (!btn) return;
+    const period = getPeriod();
+    if (period === 'morning') btn.textContent = 'Say Good Morning ☀️';
+    else if (period === 'night') btn.textContent = 'Say Goodnight 🌙';
+    else btn.textContent = 'Say hi ☺️';
+}
+
+function tapCheckin() {
+    const period = getPeriod();
+
+    // Delayed cute feedback (pop + heart + optional message)
+    buttonFeedback(document.getElementById('checkin-btn'), checkinMessages[period]);
+
+    // Start music if not playing (user gesture)
+    if (!musicPlaying) startMusic();
+
+    const kstTime = new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Seoul',
+        hour: 'numeric', minute: '2-digit', hour12: true,
+        weekday: 'short', month: 'short', day: 'numeric'
+    });
+
+    const label = period === 'morning' ? 'Good morning ☀️' : (period === 'night' ? 'Goodnight 🌙' : 'said hi ☺️');
+
+    // Log every tap to Google Sheet (unlimited). no-cors avoids browser CORS issues.
+    fetch(SHEET_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+            message: `Sunny tapped "${label}" — ${kstTime} KST`,
+            period: period,
+            time_kst: kstTime
+        })
+    }).catch(() => {});
+}
 
 // ==========================================
 // GIFT BUTTON
@@ -268,8 +381,9 @@ function showGiftButton(lockBtn, instant) {
     btn.rel = 'noopener';
     btn.className = 'gift-btn';
     btn.textContent = '🎁 Open me';
+    btn.addEventListener('click', () => buttonFeedback(btn, giftMessages));
 
-    const container = document.querySelector('#locked-page .landing-content');
+    const container = document.getElementById('button-row') || document.querySelector('#locked-page .landing-content');
     container.appendChild(btn);
 
     if (instant) {
