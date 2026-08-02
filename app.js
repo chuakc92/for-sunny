@@ -345,6 +345,12 @@ function tapCheckin() {
     // Start music if not playing (user gesture)
     if (!musicPlaying) startMusic();
 
+    // Rate-limit: log at most once per minute (she can still tap freely)
+    const now = Date.now();
+    const lastSent = parseInt(localStorage.getItem('lastCheckinSent') || '0', 10);
+    if (now - lastSent < 60 * 1000) return;
+    localStorage.setItem('lastCheckinSent', String(now));
+
     const kstTime = new Date().toLocaleString('en-US', {
         timeZone: 'Asia/Seoul',
         hour: 'numeric', minute: '2-digit', hour12: true,
@@ -363,7 +369,9 @@ function tapCheckin() {
             period: period,
             time_kst: kstTime
         })
-    }).catch(() => {});
+    }).catch(() => {
+        localStorage.removeItem('lastCheckinSent');
+    });
 }
 
 // ==========================================
