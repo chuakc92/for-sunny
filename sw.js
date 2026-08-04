@@ -1,7 +1,7 @@
 // Service Worker for offline support
 // Network-first strategy: always get fresh content when online,
 // fall back to cache when offline (airplane mode)
-const CACHE_NAME = 'sunny-open-when-v2';
+const CACHE_NAME = 'sunny-open-when-v3';
 
 self.addEventListener('install', (event) => {
     self.skipWaiting();
