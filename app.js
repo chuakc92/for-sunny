@@ -357,15 +357,16 @@ function tapCheckin() {
         weekday: 'short', month: 'short', day: 'numeric'
     });
 
-    const label = period === 'morning' ? 'Good morning ☀️' : (period === 'night' ? 'Goodnight 🌙' : 'said hi ☺️');
+    const greeting = period === 'morning' ? 'Good morning ☀️' : (period === 'night' ? 'Goodnight 🌙' : 'Hi ☺️');
 
-    // Log every tap to Google Sheet (unlimited). no-cors avoids browser CORS issues.
+    // Log every tap to Google Sheet. no-cors avoids browser CORS issues.
     fetch(SHEET_ENDPOINT, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
-            message: `Sunny tapped "${label}" — ${kstTime} KST`,
+            subject: `Sunny says ${greeting}`,
+            message: `Sunny says "${greeting}" — ${kstTime} KST`,
             period: period,
             time_kst: kstTime
         })
