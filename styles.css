@@ -1023,51 +1023,6 @@ body {
     100% { transform: scale(1) rotate(0); }
 }
 
-/* Gift button */
-.gift-btn {
-    display: none;
-    width: max-content;
-    max-width: 80%;
-    margin: 0;
-    padding: 0.85rem 1.8rem;
-    background: linear-gradient(135deg, #ff6b9d, #ff8a80);
-    color: white;
-    text-decoration: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
-    white-space: nowrap;
-}
-
-/* Stable visible state — permanent resting place */
-.gift-btn-visible {
-    display: block;
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-}
-
-/* Entrance animation — pops from the lock */
-.gift-btn-pop {
-    display: block;
-    pointer-events: auto;
-    transform-origin: center top;
-    animation: giftPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.gift-btn:active {
-    opacity: 0.85;
-}
-
-@keyframes giftPop {
-    0% { opacity: 0; transform: scale(0) translateY(-40px); }
-    55% { opacity: 1; transform: scale(1.15) translateY(4px); }
-    78% { transform: scale(0.95) translateY(-2px); }
-    100% { transform: scale(1) translateY(0); }
-}
-
 /* Floating stickers on locked page */
 .floating-sticker {
     position: absolute;
