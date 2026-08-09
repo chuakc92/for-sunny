@@ -169,8 +169,8 @@ function showFlowerGift() {
 document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
     initCheckin();
-    // If the flower gift was already revealed, keep the button on screen.
-    // Messages start cycling from the beginning again on each visit.
+    // Always start with NO message on screen.
+    // But once she's revealed the gift button, it stays there permanently.
     if (flowerMessages.length && localStorage.getItem('flowerGiftRevealed')) {
         showFlowerGift();
     }
