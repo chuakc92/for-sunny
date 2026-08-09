@@ -52,13 +52,6 @@ const lockedMessages = [
     "Is this how you treat all your locks?! I feel used 😭",
     "나중에!! 😤",
     "I can hear you tapping from Texas 🙄",
-    "Hehe.. you haven't seen this one yet have you? ☺️ Still.. no...",
-    "Yes I did add extra ones, just to make 자기야 smile ☺️ but she's too impatient!!",
-    "Tap me again if you're thinking of me ☺️",
-    "Tap me again if you're NOT thinking of me... 🥹",
-    "Wow..... 😤😤😤 okay.. how about this...",
-    "Tap me again and you promise to send me that bikini picture hehehe...",
-    "NOW I'm excited!! 🔥",
     "Okay.. you're so persistent.. lets try this.. tap me again if....",
     "you....",
     "Just really miss me and can't wait to see me ☺️",
@@ -133,21 +126,17 @@ function tapLocked() {
         startMusic();
     }
 
-    // ----- Flower gift sequence (shown FIRST) -----
-    if (lockedTapCount < flowerMessages.length) {
-        showLockedMsg(flowerMessages[lockedTapCount]);
-        // On the final flower message, fade in the gift button
-        if (lockedTapCount === flowerMessages.length - 1) {
-            localStorage.setItem('flowerGiftRevealed', 'true');
-            showFlowerGift();
-        }
-        lockedTapCount++;
-        return;
-    }
+    // Flower messages + teasing messages all cycle together as one loop.
+    const allMessages = flowerMessages.concat(lockedMessages);
+    const idx = lockedTapCount % allMessages.length;
+    showLockedMsg(allMessages[idx]);
 
-    // ----- Teasing messages (cycle after the flowers) -----
-    const teaseIdx = (lockedTapCount - flowerMessages.length) % lockedMessages.length;
-    showLockedMsg(lockedMessages[teaseIdx]);
+    // Reveal the gift button the first time we reach the last flower message,
+    // then keep it around for good.
+    if (flowerMessages.length && idx === flowerMessages.length - 1) {
+        localStorage.setItem('flowerGiftRevealed', 'true');
+        showFlowerGift();
+    }
     lockedTapCount++;
 }
 
@@ -180,11 +169,10 @@ function showFlowerGift() {
 document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
     initCheckin();
-    // If the flower gift was already revealed, show it again on load
+    // If the flower gift was already revealed, keep the button on screen.
+    // Messages start cycling from the beginning again on each visit.
     if (flowerMessages.length && localStorage.getItem('flowerGiftRevealed')) {
-        showLockedMsg(flowerMessages[flowerMessages.length - 1]);
         showFlowerGift();
-        lockedTapCount = flowerMessages.length; // continue into teasing on next tap
     }
 });
 
