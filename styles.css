@@ -1023,6 +1023,38 @@ body {
     100% { transform: scale(1) rotate(0); }
 }
 
+/* Gift button — fades in at the end of the flower messages */
+.gift-btn {
+    display: block;
+    width: max-content;
+    max-width: 80%;
+    margin: 1rem auto 0;
+    padding: 0.85rem 1.8rem;
+    background: linear-gradient(135deg, #ff6b9d, #ff8a80);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+}
+
+.gift-btn.gift-btn-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.gift-btn:active {
+    opacity: 0.85;
+}
+
 /* Floating stickers on locked page */
 .floating-sticker {
     position: absolute;

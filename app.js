@@ -65,6 +65,18 @@ const lockedMessages = [
     "Aww... 자기야 ... I like you too ☺️"
 ];
 
+// Flower gift sequence — shown FIRST when she taps the lock, reveals the gift at the end.
+// TO REMOVE THE FLOWER GIFT LATER: just set this to an empty array ->  const flowerMessages = [];
+const flowerMessages = [
+    "Are you sad that the flowers faded? 🥺",
+    "Don't be.. flowers always fade eventually. But they did exactly what they were meant to do, they gave us a beautiful moment ☺️",
+    "And they reminded us that no matter the distance, we'll always stay close to each other 🥹",
+    "So let the old ones go with a smile, okay?",
+    "Because there will always be more to take their place ❤️"
+];
+
+const FLOWER_GIFT_URL = 'https://sodagift.com/ko/welcome/gift-links/2229133?t=3k8OgWihN0kcw605JHsg';
+
 let lockedTapCount = 0;
 
 function initCountdown() {
@@ -121,76 +133,59 @@ function tapLocked() {
         startMusic();
     }
 
-    // If she's cycled through all messages
-    if (lockedTapCount === lockedMessages.length) {
-        // Replace entire button with angry sticker
-        lockBtn.style.background = 'none';
-        lockBtn.style.border = 'none';
-        lockBtn.style.boxShadow = 'none';
-        lockBtn.style.width = '120px';
-        lockBtn.style.height = '120px';
-        lockBtn.innerHTML = '<img src="stickers/sticker3.webp" style="width:100%;height:100%;">';
-        lockBtn.classList.add('sticker-anim-angry');
-        msgEl.style.animation = 'none';
-        void msgEl.offsetWidth;
-        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
-        msgEl.textContent = "HEY!! You're reading too fast!! I haven't added more messages yet!! 😤😤😤";
+    // ----- Flower gift sequence (shown FIRST) -----
+    if (lockedTapCount < flowerMessages.length) {
+        showLockedMsg(flowerMessages[lockedTapCount]);
+        // On the final flower message, fade in the gift button
+        if (lockedTapCount === flowerMessages.length - 1) {
+            localStorage.setItem('flowerGiftRevealed', 'true');
+            showFlowerGift();
+        }
         lockedTapCount++;
         return;
     }
 
-    // Require 5 taps on the sticker to reset
-    if (lockedTapCount > lockedMessages.length && lockedTapCount < lockedMessages.length + 5) {
-        const angryMsgs = [
-            "STOP TAPPING ME 😤😤😤",
-            "I'm SERIOUS!! Go away!! 😭",
-            "One more and I'll be mad!! 🙄",
-            "Okay fine I'll let you in... ",
-            "Hehe...Last one.... fine..."
-        ];
-        const idx = lockedTapCount - lockedMessages.length - 1;
-        msgEl.style.animation = 'none';
-        void msgEl.offsetWidth;
-        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
-        msgEl.textContent = angryMsgs[idx];
-        lockBtn.classList.remove('sticker-anim-angry');
-        void lockBtn.offsetWidth;
-        lockBtn.classList.add('sticker-anim-angry');
-        lockedTapCount++;
-        return;
-    }
-
-    // After 5 taps on sticker, reset back to the start
-    if (lockedTapCount >= lockedMessages.length + 5) {
-        lockBtn.innerHTML = '🔒';
-        lockBtn.style.background = '';
-        lockBtn.style.border = '';
-        lockBtn.style.boxShadow = '';
-        lockBtn.style.width = '';
-        lockBtn.style.height = '';
-        lockBtn.classList.remove('sticker-anim-angry');
-        lockedTapCount = 0;
-        msgEl.style.animation = 'none';
-        void msgEl.offsetWidth;
-        msgEl.style.animation = 'fadeInUp 0.3s ease-out';
-        msgEl.textContent = "Fine. We're starting over. 🙄";
-        return;
-    }
-
-    const msg = lockedMessages[lockedTapCount % lockedMessages.length];
+    // ----- Teasing messages (cycle after the flowers) -----
+    const teaseIdx = (lockedTapCount - flowerMessages.length) % lockedMessages.length;
+    showLockedMsg(lockedMessages[teaseIdx]);
     lockedTapCount++;
+}
 
-    // Reset animation
+// Shows text in the locked-message element with the fade-in animation
+function showLockedMsg(text) {
+    const msgEl = document.getElementById('locked-message');
     msgEl.style.animation = 'none';
     void msgEl.offsetWidth;
     msgEl.style.animation = 'fadeInUp 0.3s ease-out';
-    msgEl.textContent = msg;
+    msgEl.textContent = text;
+}
+
+// Fades in the gift button that leads to the new flower gift
+function showFlowerGift() {
+    if (document.getElementById('gift-btn')) return;
+    const btn = document.createElement('a');
+    btn.id = 'gift-btn';
+    btn.className = 'gift-btn';
+    btn.href = FLOWER_GIFT_URL;
+    btn.target = '_blank';
+    btn.rel = 'noopener';
+    btn.textContent = '🌸 Open me';
+    const msgEl = document.getElementById('locked-message');
+    msgEl.insertAdjacentElement('afterend', btn);
+    void btn.offsetWidth; // trigger transition
+    btn.classList.add('gift-btn-visible');
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
     initCheckin();
+    // If the flower gift was already revealed, show it again on load
+    if (flowerMessages.length && localStorage.getItem('flowerGiftRevealed')) {
+        showLockedMsg(flowerMessages[flowerMessages.length - 1]);
+        showFlowerGift();
+        lockedTapCount = flowerMessages.length; // continue into teasing on next tap
+    }
 });
 
 // ==========================================

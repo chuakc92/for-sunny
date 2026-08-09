@@ -30,7 +30,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 28px 60px;
+    padding: 24px 56px;
   }
   /* soft decorative blobs */
   .blob {
@@ -44,32 +44,24 @@
   .blob3 { width: 90px; height: 90px; background: #ffe0ec; bottom: 90px; left: -30px; }
 
   .sun {
-    font-size: 30px;
+    font-size: 24px;
     margin-bottom: 2px;
     position: relative;
   }
-  .cup {
-    font-size: 48px;
+  .flower {
+    font-size: 40px;
     line-height: 1;
-    margin: 2px 0 10px;
+    margin: 2px 0 8px;
     position: relative;
-    filter: drop-shadow(0 8px 12px rgba(200,120,90,0.25));
+    filter: drop-shadow(0 8px 12px rgba(220,120,150,0.25));
   }
   .title {
     font-family: 'Caveat', cursive;
-    font-size: 40px;
+    font-size: 34px;
     font-weight: 700;
     color: #e26d8a;
     line-height: 1.05;
-    margin-bottom: 6px;
-    position: relative;
-  }
-  .kor {
-    font-family: 'Gaegu', 'Nunito', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: #b5677f;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     position: relative;
   }
   .divider {
@@ -80,19 +72,20 @@
     margin: 0 auto 12px;
     position: relative;
   }
-  .sub {
-    font-size: 15px;
-    line-height: 1.6;
+  .body {
+    font-family: 'Gaegu', 'Nunito', sans-serif;
+    font-size: 18px;
+    line-height: 1.7;
     color: #7a5a63;
-    font-weight: 600;
-    max-width: 420px;
+    font-weight: 700;
+    max-width: 660px;
     position: relative;
   }
   .signoff {
     font-family: 'Caveat', cursive;
-    font-size: 26px;
+    font-size: 24px;
     color: #e26d8a;
-    margin-top: 14px;
+    margin-top: 12px;
     position: relative;
   }
   .hearts {
@@ -100,9 +93,9 @@
     font-size: 18px;
     opacity: 0.6;
   }
-  .h1 { top: 60px; right: 55px; }
-  .h2 { top: 120px; left: 50px; font-size: 13px; }
-  .h3 { bottom: 150px; right: 45px; font-size: 14px; }
+  .h1 { top: 54px; right: 50px; }
+  .h2 { top: 120px; left: 46px; font-size: 13px; }
+  .h3 { bottom: 60px; right: 44px; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -112,15 +105,21 @@
     <div class="blob blob3"></div>
     <span class="hearts h1">💗</span>
     <span class="hearts h2">🤍</span>
-    <span class="hearts h3">💗</span>
+    <span class="hearts h3">🌸</span>
 
     <div class="sun">☀️</div>
-    <div class="cup">☕️</div>
-    <div class="title">For my precious<br>little coffee addict</div>
-    <div class="kor">내 소중한 커피 중독자에게</div>
+    <div class="flower">🌸</div>
+    <div class="title">For my Sunny</div>
     <div class="divider"></div>
-    <div class="sub">A little fuel to keep you going...<br>until I can bring it to you myself. 🥹</div>
-    <div class="signoff">— 자기야's KC ❤️</div>
+    <div class="body">
+      슬퍼하지 마, 알았지? 꽃은 언젠가 다 시들지만 그건 슬픈 게 아니야.<br>
+      영원하지 않은 게 바로 꽃의 마법이거든.<br>
+      피어있는 동안만큼은 멀리 있는 내가 널 계속 생각한다는 걸 알려주니까.<br>
+      질 때마다 난 또 새 꽃으로 그 마음을 전할게.<br>
+      네가 내 품에 안기는 그날까지, 이 꽃들이 내 대신 네 곁을 지켜줄게.<br>
+      얼른 보고 싶어 🥹
+    </div>
+    <div class="signoff">언제나 너의 KC ❤️</div>
   </div>
 
   <button onclick="downloadCard()"
