@@ -143,7 +143,7 @@ function tapLocked() {
 
     // Reveal the gift button the first time we reach the last flower message,
     // then keep it around for good.
-    if (flowerMessages.length && idx === flowerMessages.length - 1) {
+    if (false && flowerMessages.length && idx === flowerMessages.length - 1) {
         localStorage.setItem('flowerGiftRevealed', 'true');
         showFlowerGift();
     }
@@ -179,12 +179,6 @@ function showFlowerGift() {
 document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
     initCheckin();
-    // Always start with NO message on screen.
-    // But once she's revealed the gift button, it stays there permanently.
-    if (flowerMessages.length && localStorage.getItem('flowerGiftRevealed')) {
-        showFlowerGift();
-    }
-
     // Auto-start music on first tap anywhere (mobile browsers require user gesture)
     function firstTapMusic() {
         startMusic();
