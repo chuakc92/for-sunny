@@ -60,13 +60,7 @@ const lockedMessages = [
 
 // Flower gift sequence — shown FIRST when she taps the lock, reveals the gift at the end.
 // TO REMOVE THE FLOWER GIFT LATER: just set this to an empty array ->  const flowerMessages = [];
-const flowerMessages = [
-    "Are you sad that the flowers faded? 🥺",
-    "Don't be.. flowers always fade eventually. But they did exactly what they were meant to do, they gave us a beautiful moment ☺️",
-    "And they reminded us that no matter the distance, we'll always stay close to each other 🥹",
-    "So let the old ones go with a smile, okay?",
-    "Because there will always be more to take their place ❤️"
-];
+const flowerMessages = [];
 
 const FLOWER_GIFT_URL = 'https://sodagift.com/ko/welcome/gift-links/2229133?t=3k8OgWihN0kcw605JHsg';
 
