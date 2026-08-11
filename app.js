@@ -59,8 +59,16 @@ const lockedMessages = [
 ];
 
 // Flower gift sequence — shown FIRST when she taps the lock, reveals the gift at the end.
-// TO REMOVE THE FLOWER GIFT LATER: just set this to an empty array ->  const flowerMessages = [];
-const flowerMessages = [];
+// TO REMOVE THE FLOWER MESSAGES LATER: just set this to an empty array ->  const flowerMessages = [];
+const flowerMessages = [
+    "Are you sad that the flowers faded? 🥺",
+    "Don't be.. they did exactly what they were supposed to do ☺️",
+    "They reminded you that someone far away was thinking of you every single day 🥹",
+    "And that hasn't changed. Not even a little bit ❤️",
+    "They kept you company while we were apart 🥹",
+    "And soon, they won't have to anymore...",
+    "Because the countdown is almost done ❤️"
+];
 
 const FLOWER_GIFT_URL = 'https://sodagift.com/ko/welcome/gift-links/2229133?t=3k8OgWihN0kcw605JHsg';
 
@@ -70,6 +78,14 @@ function initCountdown() {
     // HARD LOCK — always show locked page during development
     // Change DEV_LOCK to false when ready to use the real timer
     const DEV_LOCK = true;
+
+    // Flight version always skips the lock (she's already on the plane)
+    const isFlight = location.pathname.includes('/flight');
+    if (isFlight) {
+        document.getElementById('locked-page').classList.add('hidden');
+        document.getElementById('landing').classList.remove('hidden');
+        return;
+    }
 
     // Show locked page immediately — no waiting
     document.getElementById('locked-page').classList.remove('hidden');
@@ -168,6 +184,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (flowerMessages.length && localStorage.getItem('flowerGiftRevealed')) {
         showFlowerGift();
     }
+
+    // Auto-start music on first tap anywhere (mobile browsers require user gesture)
+    function firstTapMusic() {
+        startMusic();
+        document.removeEventListener('touchstart', firstTapMusic);
+        document.removeEventListener('click', firstTapMusic);
+    }
+    document.addEventListener('touchstart', firstTapMusic, { once: true });
+    document.addEventListener('click', firstTapMusic, { once: true });
 });
 
 // ==========================================
@@ -315,12 +340,17 @@ let musicPlaying = false;
 function startMusic() {
     if (musicPlaying) return;
     const audio = document.getElementById('bg-music');
+    if (!audio) return;
     audio.volume = 0.4;
-    audio.play();
-    musicPlaying = true;
-    document.querySelectorAll('.music-btn').forEach(btn => {
-        btn.classList.add('playing');
-        btn.textContent = '🎶';
+    audio.play().then(() => {
+        musicPlaying = true;
+        document.querySelectorAll('.music-btn').forEach(btn => {
+            btn.classList.add('playing');
+            btn.textContent = '🎶';
+        });
+    }).catch(() => {
+        // Browser blocked it — will try again on next tap
+        musicPlaying = false;
     });
 }
 
@@ -351,6 +381,8 @@ const envelopes = [
         question: "What did I tell you to drink for me during our first week talking?",
         hint: "June 12... I asked you to get one for me 🥹",
         answers: ['boba', 'boba tea', 'bubble tea'],
+        choices: ['Coffee ☕', 'Boba tea 🧋', 'Soju 🍶', 'Orange juice 🍊'],
+        correctChoice: 1,
         content: 'getAirportContent'
     },
     {
@@ -360,7 +392,9 @@ const envelopes = [
         subtitle: "I miss you too, 자기야",
         question: "What's my signature photo pose that you caught me doing in every picture?",
         hint: "You noticed it and never let me live it down 😤",
-        answers: ['hands in pockets', 'pockets', 'hand in pocket', 'hands in pocket', 'hands in his pockets'],
+        answers: ['hands in pockets'],
+        choices: ['Peace sign ✌️', 'Hands in pockets 👖', 'Holding a suitcase 🧳', 'Arms crossed 😤'],
+        correctChoice: 1,
         content: 'getMissMeContent'
     },
     {
@@ -370,7 +404,9 @@ const envelopes = [
         subtitle: 'How well do you know KC?',
         question: "What board game did I win 7 out of 8 times?",
         hint: "We played it at my friend's game night 🙂",
-        answers: ['codenames', 'code names', 'codename'],
+        answers: ['codenames'],
+        choices: ['Monopoly 🎩', 'Codenames 🕵️', 'Uno 🃏', 'Catan 🏝️'],
+        correctChoice: 1,
         content: 'getQuizContent'
     },
     {
@@ -380,7 +416,9 @@ const envelopes = [
         subtitle: 'Our food bucket list',
         question: "What did I say I'd always have stocked in my fridge for you?",
         hint: "You were at a cafe and I made a mental note 😌",
-        answers: ['desserts', 'dessert', 'chocolate', 'sweets'],
+        answers: ['desserts', 'dessert'],
+        choices: ['Buldak 🔥', 'Kimchi 🥬', 'Desserts 🍰', 'Ramen 🍜'],
+        correctChoice: 2,
         content: 'getHungryContent'
     },
     {
@@ -390,7 +428,9 @@ const envelopes = [
         subtitle: "Read this. I promise it helps.",
         question: "What did I promise we'd do even if we're too scared for the big rollercoasters?",
         hint: "Something... spinny... and childish 🤭",
-        answers: ['kids rides', 'teacups', 'spinning cups', 'spinning cup rides', 'kid rides', 'tea cups', 'kids ride'],
+        answers: ['kids rides', 'teacups', 'spinning cups'],
+        choices: ['Watch other people scream 😂', 'Eat funnel cake instead 🍩', 'Go on the kids rides 🎠', 'Leave immediately 🏃'],
+        correctChoice: 2,
         content: 'getNervousContent'
     },
     {
@@ -400,7 +440,9 @@ const envelopes = [
         subtitle: 'Our best moments, timestamped',
         question: "What time was it for me during our first real-time conversation?",
         hint: "I refused to sleep... you kept telling me to go to bed 😤",
-        answers: ['3am', '4am', '3 am', '4 am', '3', '4'],
+        answers: ['3am', '4am', '3', '4'],
+        choices: ['11pm 🌆', '1am 🌙', '3am 😵', '6am ☀️'],
+        correctChoice: 2,
         content: 'getMemoriesContent'
     },
     {
@@ -410,7 +452,9 @@ const envelopes = [
         subtitle: 'Press play, close your eyes',
         question: "What Chinese phrase did you guess correctly from my voice message?",
         hint: "You figured it out from a song... 想见你",
-        answers: ['wo hao xiang ni', 'i miss you', '我好想你', 'wo xiang ni', 'xiang ni'],
+        answers: ['i miss you', 'wo xiang ni'],
+        choices: ['你好 (Hello) 👋', '我好想你 (I miss you) 🥹', '我爱你 (I love you) ❤️', '晚安 (Goodnight) 🌙'],
+        correctChoice: 1,
         content: 'getVoiceContent'
     },
     {
@@ -420,7 +464,9 @@ const envelopes = [
         subtitle: 'A collage of our journey',
         question: "What place did we BOTH visit in Japan, exactly one year apart?",
         hint: "You said it was your favorite place that day 😊",
-        answers: ['blue pond', 'farm tomita', 'sapporo', 'hokkaido', 'lavender field'],
+        answers: ['blue pond', 'farm tomita', 'sapporo', 'hokkaido'],
+        choices: ['Tokyo Tower 🗼', 'Blue Pond 🩵', 'Shibuya Crossing 🚶', 'Mt. Fuji 🗻'],
+        correctChoice: 1,
         content: 'getPhotosContent'
     },
     {
@@ -431,16 +477,107 @@ const envelopes = [
         question: "What color am I buying everything in for you?",
         hint: "Your iPhone, your tumbler, your whole life... 💗",
         answers: ['pink'],
+        choices: ['Black 🖤', 'Pink 💗', 'Purple 💜', 'Red ❤️'],
+        correctChoice: 1,
         content: 'getFutureContent'
+    },
+    // ==========================================
+    // BONUS ENVELOPES — "Never Seen" photo unlocks
+    // ==========================================
+    {
+        id: 'sapporo-paths',
+        emoji: '🗼',
+        title: "Our Paths Almost Crossed",
+        subtitle: 'Sapporo... one year apart',
+        question: "What famous tower in Sapporo was I standing in front of while you were there a year later?",
+        hint: "You told me you went there too... and I was literally smiling 😤",
+        answers: ['tv tower'],
+        choices: ['Clock Tower 🕰️', 'TV Tower 📡', 'Sapporo Dome 🏟️', 'A random lamp post 🙄'],
+        correctChoice: 1,
+        content: 'getSapporoContent'
+    },
+    {
+        id: 'farm-tractor',
+        emoji: '🚜',
+        title: "The Tractor at Farm Tomita",
+        subtitle: "We were there. Same fields. Different years.",
+        question: "What flavor was the ice cream you were eating when you sent me your first Farm Tomita photo?",
+        hint: "It was purple... and cold... 🍦",
+        answers: ['lavender'],
+        choices: ['Melon 🍈', 'Lavender 💜', 'Strawberry 🍓', 'Matcha 🍵'],
+        correctChoice: 1,
+        content: 'getFarmTractorContent'
+    },
+    {
+        id: 'snack-game',
+        emoji: '🦐',
+        title: "The Emoji Hiding Game",
+        subtitle: "You always find my hiding spots 😤",
+        question: "What snack did I hide on top of my pull-up bar?",
+        hint: "It's a protein bar with a green wrapper 🟢",
+        answers: ['nugo', 'nugo bar', 'protein bar'],
+        choices: ['Mentos 🫧', 'NuGo bar 💪', 'Ginger Ale 🥤', 'Shrimp crackers 🦐'],
+        correctChoice: 1,
+        content: 'getSnackContent'
+    },
+    {
+        id: 'alpaca-friend',
+        emoji: '🦙',
+        title: "The Alpaca Situation",
+        subtitle: 'You said you were jealous... 😤',
+        question: "What animal in Hokkaido did I get too friendly with?",
+        hint: "You said you were jealous of it 🤭",
+        answers: ['alpaca'],
+        choices: ['A deer 🦌', 'An alpaca 🦙', 'A cat 🐱', 'A penguin 🐧'],
+        correctChoice: 1,
+        content: 'getAlpacaContent'
+    },
+    {
+        id: 'mt-fuji',
+        emoji: '🌄',
+        title: "6am Mt. Fuji Energy",
+        subtitle: 'This is what morning KC looks like',
+        question: "What time was it for me during our first real-time chat? (You kept telling me to go to sleep!)",
+        hint: "I refused to sleep... I was stubborn 😤",
+        answers: ['3am', '4am', '3', '4'],
+        choices: ['Midnight 🌑', '2am 😴', '3am 😵', '5am ☀️'],
+        correctChoice: 2,
+        content: 'getMtFujiContent'
+    },
+    {
+        id: 'fog-city',
+        emoji: '🌫️',
+        title: "Mystery Man in the Fog",
+        subtitle: 'Before Texas, before you...',
+        question: "What Chinese city was I in that's famous for hotpot and fog?",
+        hint: "I told you about the fog there... 🌶️",
+        answers: ['chongqing'],
+        choices: ['Shanghai 🌃', 'Beijing 🏯', 'Chongqing 🌫️', 'Guangzhou 🌺'],
+        correctChoice: 2,
+        content: 'getFogContent'
+    },
+    {
+        id: 'drama-actor',
+        emoji: '😊',
+        title: "The Smile You Always Ask For",
+        subtitle: "Fine. You win.",
+        question: "What kind of drama actor did you say I look like?",
+        hint: "You said Chinese or Japanese... 🎬",
+        answers: ['chinese', 'japanese'],
+        choices: ['K-drama actor 🇰🇷', 'Chinese/Japanese drama actor 🎬', 'Hollywood actor 🎥', 'Bollywood actor 💃'],
+        correctChoice: 1,
+        content: 'getDramaContent'
     },
     {
         id: 'landing-tx',
         emoji: '🤠',
         title: "You Land in Texas",
         subtitle: 'Almost the last one... ✨',
-        question: "What am I to you? (hint: it rhymes with 'honorary Korean'...)",
-        hint: "Just kidding. What did our paths keep doing? 🥹",
+        question: "What did our paths keep doing before we finally met?",
+        hint: "Japan, Austin, Hinge... 🥹",
         answers: ['crossing', 'crossed', 'cross'],
+        choices: ['Missing each other 😢', 'Crossing ✨', 'Running parallel 🛤️', 'Going in circles 🔄'],
+        correctChoice: 1,
         isFinal: false,
         content: 'getLandingContent'
     },
@@ -449,11 +586,12 @@ const envelopes = [
         emoji: '💗',
         title: "You're With Me",
         subtitle: 'Hand me your phone. 🤭',
-        question: "Say it to my face. What do you call me? ☺️",
-        hint: "이제 시작이야...",
+        question: "KC will ask you something. Type your answer here ☺️",
+        hint: "",
         answers: ['자기야', 'jagiya', 'jagi', '자기'],
-        isFinal: true,
-        isSecret: true,
+        choices: ['오빠 😏', '자기야 💗', '여보 💍', 'KC 😤'],
+        correctChoice: 1,
+        isFinal: false,
         content: 'getWithMeContent'
     }
 ];
@@ -531,6 +669,24 @@ function updateProgress() {
 // ENVELOPE OPEN / PASSWORD LOGIC
 // ==========================================
 
+const wrongMessages = [
+    "WRONG 😤😤😤 Do you even know me?!",
+    "Excuse me?! Try again!!",
+    "That's not it, lady 😤",
+    "I'm offended 🙄 Try again",
+    "Wow... I'm hurt... but try again 🥹",
+    "Are you guessing randomly?! 😤",
+    "Nope!! Think harder 🧠",
+    "How do you not know this 😭",
+    "I can't believe you picked that 😤",
+    "Wrong!! Do I mean nothing to you?! 😤😤",
+    "Absolutely not 🙅 one more try...",
+    "You're lucky I'm giving unlimited tries 😤",
+    "GIRL... 😤 seriously?!",
+    "Try again before I add more questions 😤",
+    "I'm adding a 5th option that says 'I give up' 😤"
+];
+
 function openEnvelope(id) {
     const env = envelopes.find(e => e.id === id);
     if (!env) return;
@@ -541,28 +697,51 @@ function openEnvelope(id) {
         return;
     }
 
-    // Show password prompt
+    // Lock background scroll
+    document.body.style.overflow = 'hidden';
+
+    // Show multiple choice prompt (or text input for the final in-person envelope)
     currentEnvelopeId = id;
     document.getElementById('password-question').textContent = env.question;
     document.getElementById('password-hint').textContent = env.hint || '';
-    document.getElementById('password-input').value = '';
     document.getElementById('password-error').classList.add('hidden');
-    document.getElementById('password-modal').classList.remove('hidden');
 
-    setTimeout(() => {
-        document.getElementById('password-input').focus();
-    }, 400);
+    // Render choice buttons (or text input for 'with-me')
+    const grid = document.getElementById('choices-grid');
+    grid.innerHTML = '';
+
+    if (env.id === 'with-me') {
+        // Special: text input — she has to say it to his face and type it
+        grid.innerHTML = `
+            <input type="text" id="password-input" class="choice-input" placeholder="Type your answer..." autocomplete="off" autocapitalize="none">
+            <button class="unlock-btn" onclick="checkTypedAnswer()">Unlock 💗</button>
+        `;
+        setTimeout(() => document.getElementById('password-input').focus(), 400);
+        // Handle enter key
+        setTimeout(() => {
+            const inp = document.getElementById('password-input');
+            if (inp) inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkTypedAnswer(); } });
+        }, 100);
+    } else {
+        env.choices.forEach((choice, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.textContent = choice;
+            btn.addEventListener('click', () => pickChoice(idx));
+            grid.appendChild(btn);
+        });
+    }
+
+    document.getElementById('password-modal').classList.remove('hidden');
 }
 
-function checkPassword() {
+function checkTypedAnswer() {
     const env = envelopes.find(e => e.id === currentEnvelopeId);
     if (!env) return;
-
     const input = document.getElementById('password-input').value.trim().toLowerCase();
     const isCorrect = env.answers.some(a => input.includes(a.toLowerCase()));
 
     if (isCorrect) {
-        // Mark as opened
         if (!openedEnvelopes.includes(currentEnvelopeId)) {
             openedEnvelopes.push(currentEnvelopeId);
             localStorage.setItem('openedEnvelopes', JSON.stringify(openedEnvelopes));
@@ -572,28 +751,58 @@ function checkPassword() {
         renderEnvelopes();
     } else {
         const errorEl = document.getElementById('password-error');
+        errorEl.textContent = wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
         errorEl.classList.remove('hidden');
         errorEl.style.animation = 'none';
-        // Force reflow
         void errorEl.offsetWidth;
         errorEl.style.animation = 'shake 0.4s ease-in-out';
     }
 }
 
-function closePasswordModal() {
-    document.getElementById('password-modal').classList.add('hidden');
-    currentEnvelopeId = null;
+function pickChoice(idx) {
+    const env = envelopes.find(e => e.id === currentEnvelopeId);
+    if (!env) return;
+
+    if (idx === env.correctChoice) {
+        // Correct! Flash green with a bounce, then open after delay
+        const btns = document.querySelectorAll('.choice-btn');
+        btns.forEach(b => b.style.pointerEvents = 'none');
+        if (btns[idx]) {
+            btns[idx].classList.add('choice-correct');
+        }
+
+        setTimeout(() => {
+            if (!openedEnvelopes.includes(currentEnvelopeId)) {
+                openedEnvelopes.push(currentEnvelopeId);
+                localStorage.setItem('openedEnvelopes', JSON.stringify(openedEnvelopes));
+            }
+            closePasswordModal();
+            showEnvelopeContent(env);
+            renderEnvelopes();
+        }, 1200);
+    } else {
+        // Wrong — show angry message, shake the button
+        const errorEl = document.getElementById('password-error');
+        errorEl.textContent = wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
+        errorEl.classList.remove('hidden');
+        errorEl.style.animation = 'none';
+        void errorEl.offsetWidth;
+        errorEl.style.animation = 'shake 0.4s ease-in-out';
+
+        // Mark the wrong button
+        const btns = document.querySelectorAll('.choice-btn');
+        if (btns[idx]) {
+            btns[idx].classList.add('choice-wrong');
+            setTimeout(() => btns[idx].classList.remove('choice-wrong'), 600);
+        }
+    }
 }
 
-// Handle Enter key on password input
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('password-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            checkPassword();
-        }
-    });
-});
+function closePasswordModal() {
+    document.getElementById('password-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+    currentEnvelopeId = null;
+}
 
 // ==========================================
 // SHOW ENVELOPE CONTENT
@@ -604,6 +813,11 @@ function showEnvelopeContent(env) {
     const body = document.getElementById('modal-body');
     body.innerHTML = window[env.content]();
     modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    // Scroll to top of the modal content
+    modal.scrollTop = 0;
+    const modalContent = modal.querySelector('.modal-content');
+    if (modalContent) modalContent.scrollTop = 0;
 
     // Fire confetti for the final envelope
     if (env.id === 'landing-tx' && typeof confetti === 'function') {
@@ -613,6 +827,7 @@ function showEnvelopeContent(env) {
 
 function closeModal() {
     document.getElementById('envelope-modal').classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 // ==========================================
@@ -1226,10 +1441,24 @@ function getPhotosContent() {
                 <img src="photos/blue-pond-her.jpg" alt="">
                 <div class="photo-caption">Your Blue Pond — June 17 🩵</div>
             </div>
-            <div class="photo-item">
-                <img src="photos/blue-pond-me.jpg" alt="">
-                <div class="photo-caption">My Blue Pond — one year earlier ✨</div>
+            <div class="photo-item wide">
+                <div class="locked-photo" onclick="unlockPhoto(this, 'bluepond-q')">
+                    <img src="photos/blue-pond-me.jpg" alt="">
+                    <div class="locked-photo-overlay">
+                        <span class="lock-emoji">🔒</span>
+                        <p>Tap to unlock</p>
+                    </div>
+                </div>
+                <div class="photo-caption">My Blue Pond — ? 🩵</div>
             </div>
+        <div id="bluepond-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">How many months apart were we at the Blue Pond?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">6 months</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">12 months</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">3 months</button>
+            </div>
+        </div></div>
             <div class="photo-item wide">
                 <img src="photos/farm-tomita-her.jpg" alt="">
                 <div class="photo-caption">Farm Tomita — "I couldn't remember the name, so in my head it was just the lavender field" 💜</div>
@@ -1238,18 +1467,26 @@ function getPhotosContent() {
                 <img src="photos/violin-headshot.jpg" alt="">
                 <div class="photo-caption">The violin headshot that broke me 🎻 "OHHHH MYYY GOOOSSHHH"</div>
             </div>
+            <!-- PERSONAL MESSAGE: violin headshot -->
+            <div class="photo-message"></div>
             <div class="photo-item">
                 <img src="photos/recital-dress.jpg" alt="">
                 <div class="photo-caption">Your recital in the red dress 🌹 I wished I'd met you 2 months earlier</div>
             </div>
+            <!-- PERSONAL MESSAGE: recital dress -->
+            <div class="photo-message"></div>
             <div class="photo-item">
                 <img src="photos/spain-mallorca.jpg" alt="">
                 <div class="photo-caption">Mallorca, Spain — you in a dress by the ocean. Breathtaking. 🌊</div>
             </div>
+            <!-- PERSONAL MESSAGE: mallorca -->
+            <div class="photo-message"></div>
             <div class="photo-item">
                 <img src="photos/ballet.jpg" alt="">
                 <div class="photo-caption">Ballet in pink — "It's not sexy tho 😂" ...wrong. 💗</div>
             </div>
+            <!-- PERSONAL MESSAGE: ballet -->
+            <div class="photo-message"></div>
             <div class="photo-item wide">
                 <img src="photos/ice-skating.jpg" alt="">
                 <div class="photo-caption">Central Park ice skating 🎿 "I don't fall anymore! I'm actually really good!" ...the video says otherwise 🤣</div>
@@ -1280,7 +1517,7 @@ function getPhotosContent() {
             </div>
             <div class="photo-item">
                 <img src="photos/hair-styling.jpg" alt="">
-                <div class="photo-caption">Midnight hair styling 💇‍♂️ "I actually think this is the best your hair has ever looked" — saved forever</div>
+                <div class="photo-caption">Singapore 💇‍♂️ "Your hair looks so cool!" — noted forever</div>
             </div>
             <div class="photo-item">
                 <img src="photos/buldak.jpg" alt="">
@@ -1290,10 +1527,14 @@ function getPhotosContent() {
                 <img src="photos/cat.jpg" alt="">
                 <div class="photo-caption">Your cat 🐱 "So cuuuuttteee I just wanna cuddle her!!" ...I don't see you though 😤</div>
             </div>
+            <!-- PERSONAL MESSAGE: cat -->
+            <div class="photo-message"></div>
             <div class="photo-item wide">
                 <img src="photos/stickers.jpg" alt="">
-                <div class="photo-caption">The sticker war of July 26th — you're an artist with these 🤣</div>
+                <div class="photo-caption">The sticker war of July 26th — you turned us both into stickers 🤣</div>
             </div>
+            <!-- PERSONAL MESSAGE: stickers -->
+            <div class="photo-message"></div>
         </div>
         <div style="margin-top:1.5rem;">
             <p style="font-size:0.85rem; color:#8b6b7a; text-align:center; margin-bottom:0.75rem;">Some of my favorite reactions to your photos:</p>
@@ -1395,18 +1636,17 @@ function getWithMeContent() {
         <h2 class="section-title">이제 시작이야 💗</h2>
         <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.3rem; color:#8b6b7a; margin-bottom:1.5rem;">This is just the beginning.</p>
         <div class="message-text">
-            <p>자기야...</p>
-            <p>If you're reading this, it means I'm right next to you. Actually here. Not 14 hours away. Not behind a screen. Not a voice message you replay at 4am.</p>
-            <p>Me. Right here.</p>
-            <p>I've been waiting for this moment since June 11th. Every text, every voice note, every late night, every "go to sleep!" that I ignored, every picture I replayed, every sticker you made of me — it was all leading to right now.</p>
-            <p>I don't know if I'm shaking or if you are. Probably both.</p>
-            <p>I just want you to know: you are so much more beautiful in person. Your voice is so much softer. And my hands finally have somewhere to be.</p>
+            <p>We're here.</p>
+            <p>Not 14 hours apart. Not behind a screen. Not a voice message replayed at 4am. Not a countdown on a phone.</p>
+            <p>Us. Right here. Together.</p>
+            <p>Everything since June 11th led to this. Every text, every voice note, every late night where neither of us wanted to say goodnight, every sticker war, every "go to sleep!" that got ignored... it was all building to this exact moment.</p>
+            <p>72 days. Thousands of messages. One timezone. And now... zero distance.</p>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/with-you.m4a')">▶</button>
             <div class="audio-info">
-                <div class="audio-title">For you, right now ☺️</div>
-                <div class="audio-subtitle">Press play. I'll wait.</div>
+                <div class="audio-title">For us, right now ☺️</div>
+                <div class="audio-subtitle">Press play together.</div>
             </div>
             <div class="audio-waves">
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -1414,16 +1654,15 @@ function getWithMeContent() {
             </div>
         </div>
         <div class="message-text">
-            <p>72 days. Thousands of messages. One timezone away. And now zero distance between us.</p>
-            <p>Thank you for saying 자기야 to my face. I've been dreaming about hearing that since July.</p>
-            <p>이제 시작이야. This is just the beginning. And I'm so glad it's with you.</p>
+            <p>Our paths crossed in Sapporo without us knowing. They crossed again in Austin. And now they don't have to cross anymore... because they finally merged.</p>
+            <p>이제 시작이야. This is just the beginning. And there's nobody else in the world I'd rather start it with. ☺️</p>
         </div>
         <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff0f5,#ffeef8); border-radius:16px;">
-            <div style="font-family:'Caveat',cursive; font-size:1.2rem; color:#ff6b9d; margin-bottom:0.5rem;">Our first item ✓</div>
-            <div style="font-size:1rem; color:#4a3040; text-decoration:line-through; opacity:0.7;">☐ Our first hug at the airport</div>
-            <div style="font-size:1rem; color:#4a3040; font-weight:700; margin-top:0.25rem;">☑️ Our first hug. ☺️</div>
+            <div style="font-family:'Caveat',cursive; font-size:1.2rem; color:#ff6b9d; margin-bottom:0.5rem;">Our first ✓</div>
+            <div style="font-size:1rem; color:#4a3040; text-decoration:line-through; opacity:0.7;">☐ Our first hug</div>
+            <div style="font-size:1rem; color:#4a3040; font-weight:700; margin-top:0.25rem;">☑️ Done. Finally. ☺️</div>
         </div>
-        <div class="message-signature">— Your KC. Finally here. ❤️</div>
+        <div class="message-signature">— Us. Finally here. ❤️</div>
     `;
 }
 
@@ -1468,3 +1707,302 @@ function playAudio(btn, src) {
         wavesEl.classList.remove('playing');
     });
 }
+
+// ==========================================
+// BONUS CONTENT — "Never Seen" Photo Unlocks
+// ==========================================
+
+function getSapporoContent() {
+    return `
+        <h2 class="section-title">Our Paths Almost Crossed 🗼</h2>
+        <div class="message-text">
+            <p>You know how we kept saying our paths crossed in spirit?</p>
+            <p>Well... I was literally standing somewhere in Sapporo. Smiling. At a spot you walked past a year later.</p>
+            <p>Tap the photo to unlock it ☺️</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'sapporo-q')">
+            <img src="photos/sapporo-me.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="sapporo-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What landmark am I standing in front of?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Clock Tower 🕰️</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">TV Tower 📡</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Sapporo Dome 🏟️</button>
+            </div>
+        </div>
+        <div class="message-text" style="margin-top:1rem;">
+            <p>If time travel existed, I would've turned around and waved. But I think fate did something better... it brought you to Texas instead. ☺️</p>
+        </div>
+        <div class="message-signature">— Your almost-crossed-paths boy 🗼</div>
+    `;
+}
+
+function getFarmTractorContent() {
+    return `
+        <h2 class="section-title">Same Fields. Different Years. 🚜</h2>
+        <div class="message-text">
+            <p>You were eating lavender ice cream at Farm Tomita. I was somewhere in those same fields... doing something ridiculous.</p>
+            <p>Tap the photo to unlock it ☺️</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'farm-q')">
+            <img src="photos/farm-tomita-tractor.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="farm-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What am I sitting on in this photo?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A bench 🪑</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">A tractor 🚜</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A lavender bush 💜</button>
+            </div>
+        </div>
+        <div class="message-text" style="margin-top:1rem;">
+            <p>Same lavender fields. Same magic. One year apart. The universe is wild. ☺️</p>
+        </div>
+        <div class="message-signature">— Farmer KC 🚜💜</div>
+    `;
+}
+
+function getSnackContent() {
+    return `
+        <h2 class="section-title">You Found My Hiding Spot 🦐</h2>
+        <div class="message-text">
+            <p>Remember our emoji hiding game? You always found everything. Here's a face you've never seen:</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'snack-q')">
+            <img src="photos/shrimp-cracker.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="snack-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What snack am I holding?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Shrimp cracker 🦐</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">NuGo bar 💪</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Pocky 🍫</button>
+            </div>
+        </div>
+        <div class="message-text" style="margin-top:1rem;">
+            <p>This face is what you're gonna see at the airport. 😂</p>
+        </div>
+        <div class="message-signature">— The guy who can't hide anything from you 😤</div>
+    `;
+}
+
+function getAlpacaContent() {
+    return `
+        <h2 class="section-title">The Alpaca Situation 🦙</h2>
+        <div class="message-text">
+            <p>Okay, I admit it. I was maybe... a LITTLE too friendly with the alpacas in Hokkaido.</p>
+            <p>But check what else I was doing there:</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'alpaca-q')">
+            <img src="photos/stonehenge-hokkaido.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="alpaca-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What fake landmark am I leaning on?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Eiffel Tower 🗼</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Stonehenge 🗿</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Statue of Liberty 🗽</button>
+            </div>
+        </div>
+        <div class="photo-collage" style="margin-top:1rem;">
+            <div class="photo-item wide">
+                <img src="photos/alpaca-2.jpg" alt="">
+                <div class="photo-caption">And yes, here's the other alpaca. I promise you're still number one. 🥹</div>
+            </div>
+        </div>
+        <div class="message-signature">— Your alpaca-flirting boy 🦙</div>
+    `;
+}
+
+function getMtFujiContent() {
+    return `
+        <h2 class="section-title">6am Mt. Fuji Energy 🌄</h2>
+        <div class="message-text">
+            <p>Remember our first real-time chat? 3am my time. You kept telling me to sleep. I kept saying NO.</p>
+            <p>Well this is what early morning KC actually looks like:</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'fuji-q')">
+            <img src="photos/mt-fuji-morning.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="fuji-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What's in my mouth in this photo?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Chopsticks 🥢</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Toothbrush 🪥</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Pocky stick 🍫</button>
+            </div>
+        </div>
+        <div class="message-text" style="margin-top:1rem;">
+            <p>This is the energy that stays up until 3am for you. Zero regrets. ☺️</p>
+        </div>
+        <div class="message-signature">— 3am insomniac KC 🌙</div>
+    `;
+}
+
+function getFogContent() {
+    return `
+        <h2 class="section-title">Before Texas. Before You. 🌫️</h2>
+        <div class="message-text">
+            <p>Before we met... before Hinge... I was somewhere far away.</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'fog-q')">
+            <img src="photos/chongqing-fog.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="fog-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What country was I in?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Japan 🇯🇵</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">China 🇨🇳</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Korea 🇰🇷</button>
+            </div>
+        </div>
+        <div class="message-text" style="margin-top:1rem;">
+            <p>Malaysia → Pittsburgh → Chongqing → Texas → You.</p>
+            <p>Every move led closer to June 11th. And June 11th led to us. ☺️</p>
+        </div>
+        <div class="message-signature">— Your wanderer, finally home 🌏❤️</div>
+    `;
+}
+
+function getDramaContent() {
+    return `
+        <h2 class="section-title">Fine. Here's the Smile. 😊</h2>
+        <div class="message-text">
+            <p>You always say you want to see me smile more. Fine. You win:</p>
+        </div>
+        <div class="locked-photo" onclick="unlockPhoto(this, 'smile-q')">
+            <img src="photos/smiling-me.jpg" alt="">
+            <div class="locked-photo-overlay">
+                <span class="lock-emoji">🔒</span>
+                <p>Tap to unlock</p>
+            </div>
+        </div>
+        <div id="smile-q" class="photo-question hidden">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What do you always catch me doing in photos instead of smiling?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Looking away 😒</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Closing my eyes 😑</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Looking serious 😐</button>
+            </div>
+        </div>
+        <div class="photo-collage" style="margin-top:1rem;">
+            <div class="photo-item wide">
+                <img src="photos/photoshoot-me.jpg" alt="">
+                <div class="photo-caption">Bonus: a photoshoot you didn't know existed. Drama actor material? You tell me 😏</div>
+            </div>
+        </div>
+        <div class="message-signature">— Your drama actor with bad posing skills 🎬❤️</div>
+    `;
+}
+
+// ==========================================
+// IMAGE VIEWER — tap photo to view fullscreen
+// ==========================================
+
+document.addEventListener('click', function (e) {
+    var img = e.target;
+    if (img.tagName !== 'IMG') {
+        var item = e.target.closest('.photo-item');
+        if (item) img = item.querySelector('img');
+        else return;
+    }
+    if (!img || !img.closest('#modal-body')) return;
+    // Don't open blurred locked photos
+    if (img.closest('.locked-photo') && !img.closest('.locked-photo').classList.contains('unlocked')) return;
+
+    var viewer = document.createElement('div');
+    viewer.className = 'img-viewer';
+    viewer.innerHTML = '<img src="' + img.src + '" alt="">';
+    viewer.addEventListener('click', function () { viewer.remove(); });
+    document.body.appendChild(viewer);
+});
+
+// ==========================================
+// LOCKED PHOTO — blur until question answered
+// ==========================================
+
+function unlockPhoto(photoEl, questionId) {
+    if (photoEl.classList.contains('unlocked')) return;
+    var q = document.getElementById(questionId);
+    if (!q) return;
+    // Show as a centered popup
+    q.classList.remove('hidden');
+}
+
+function checkPhotoAnswer(btn, isCorrect) {
+    if (isCorrect) {
+        var questionDiv = btn.closest('.photo-question');
+        // Find the locked photo by ID reference
+        var photoId = questionDiv.id.replace('-q', '');
+        var allLocked = document.querySelectorAll('.locked-photo');
+        allLocked.forEach(function (lp) {
+            if (lp.getAttribute('onclick') && lp.getAttribute('onclick').indexOf(questionDiv.id) !== -1) {
+                lp.classList.add('unlocked');
+            }
+        });
+        questionDiv.classList.add('hidden');
+    } else {
+        btn.classList.add('choice-wrong');
+        setTimeout(function () { btn.classList.remove('choice-wrong'); }, 600);
+    }
+}
+
+// ==========================================
+// BUCKET LIST — tappable checkboxes
+// ==========================================
+
+(function () {
+    var checked = JSON.parse(localStorage.getItem('bucketChecked') || '[]');
+
+    document.addEventListener('click', function (e) {
+        var item = e.target.closest('.bucket-item');
+        if (!item) return;
+
+        var text = item.textContent.trim();
+        var idx = checked.indexOf(text);
+        if (idx === -1) {
+            checked.push(text);
+            item.classList.add('checked');
+        } else {
+            checked.splice(idx, 1);
+            item.classList.remove('checked');
+        }
+        localStorage.setItem('bucketChecked', JSON.stringify(checked));
+    });
+
+    // Restore checked state when modal content loads
+    var observer = new MutationObserver(function () {
+        var items = document.querySelectorAll('.bucket-item');
+        items.forEach(function (item) {
+            if (checked.indexOf(item.textContent.trim()) !== -1) {
+                item.classList.add('checked');
+            }
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
