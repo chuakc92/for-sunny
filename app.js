@@ -354,7 +354,7 @@ function tapSticker(el, type) {
 // ==========================================
 
 let musicPlaying = false;
-const bgTracks = ['audio/second-chance.mp3', 'audio/xiang-jian-ni.mp3'];
+const bgTracks = ['audio/you-and-me.mp3','audio/second-chance.mp3', 'audio/xiang-jian-ni.mp3'];
 let bgTrackIdx = 0;
 
 function startMusic() {
