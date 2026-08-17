@@ -362,12 +362,9 @@ function startMusic() {
     const audio = document.getElementById('bg-music');
     if (!audio) return;
     audio.volume = 0.4;
-    // When current track ends, play the next one in a loop
-    audio.onended = function() {
-        bgTrackIdx = (bgTrackIdx + 1) % bgTracks.length;
-        audio.src = bgTracks[bgTrackIdx];
-        audio.play().catch(() => {});
-    };
+    // Set up track advancement
+    audio.removeEventListener('ended', advanceTrack);
+    audio.addEventListener('ended', advanceTrack);
     audio.play().then(() => {
         musicPlaying = true;
         document.querySelectorAll('.music-btn').forEach(btn => {
@@ -375,9 +372,16 @@ function startMusic() {
             btn.textContent = '🎶';
         });
     }).catch(() => {
-        // Browser blocked it , will try again on next tap
         musicPlaying = false;
     });
+}
+
+function advanceTrack() {
+    const audio = document.getElementById('bg-music');
+    bgTrackIdx = (bgTrackIdx + 1) % bgTracks.length;
+    audio.src = bgTracks[bgTrackIdx];
+    audio.load();
+    audio.play().catch(() => {});
 }
 
 function toggleMusic() {
