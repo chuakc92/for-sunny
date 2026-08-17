@@ -1,12 +1,12 @@
 /* ==========================================
-   FOR SUNNY ☀️ — Main App Logic
+   FOR SUNNY ☀️ , Main App Logic
    ========================================== */
 
 // ==========================================
-// COUNTDOWN LOCK — Unlocks Aug 23, 2025
+// COUNTDOWN LOCK , Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_TIMESTAMP = 1787471100000; // Aug 23, 2026 4:45 PM KST (07:45 UTC) — 1hr before her ~5:45pm KST departure
+const UNLOCK_TIMESTAMP = 1787471100000; // Aug 23, 2026 4:45 PM KST (07:45 UTC) , 1hr before her ~5:45pm KST departure
 
 // Server time offset to prevent phone clock cheating
 let serverTimeOffset = 0;
@@ -22,7 +22,7 @@ async function fetchServerTime() {
             serverTimeOffset = serverNow - localNow;
         }
     } catch (e) {
-        // If offline, fall back to device time (acceptable — she'll be on a plane)
+        // If offline, fall back to device time (acceptable , she'll be on a plane)
         serverTimeOffset = 0;
     }
 }
@@ -55,12 +55,34 @@ const lockedMessages = [
     "Okay.. you're so persistent.. lets try this.. tap me again if....",
     "you....",
     "Just really miss me and can't wait to see me ☺️",
-    "Aww... 자기야 ... I like you too ☺️"
+    "Aww... 자기야 ... I like you too ☺️",
+    "Just a few more days until we can be together",
+    "Until we get to hold each others hands",
+    "Until I no longer...need to hug my long pillow...",
+    "You've been running around nonstop for some time...",
+    "Practicing, doctors, friends...",
+    "And you're still thinking of me? ❤️",
+    "I see you, and I'm so proud of you ❤️ more than anything!",
+    "Do what you need to do and please don't worry about me, okay? ☺️",
+    "I just want you to know that even if we don't have time to talk these days...",
+    "None of that changes anything for me ☺️",
+    "화이팅 자기야 ☺️"
 ];
 
-// Flower gift sequence — shown FIRST when she taps the lock, reveals the gift at the end.
+// Flower gift sequence , shown FIRST when she taps the lock, reveals the gift at the end.
 // TO REMOVE THE FLOWER MESSAGES LATER: just set this to an empty array ->  const flowerMessages = [];
 const flowerMessages = [
+    "Just a few more days until we can be together",
+    "Until we get to hold each others hands",
+    "Until I no longer...need to hug my long pillow...",
+    "You've been running around nonstop for some time...",
+    "Practicing, doctors, friends...",
+    "WOW, you barely have time but you still check? ❤️",
+    "I see you, and I'm so proud of you ❤️ more than anything!",
+    "Do what you need to do and please don't worry about me, okay? ☺️",
+    "I just want you to know that even if we don't have time to talk these days...",
+    "None of that changes anything for me ☺️",
+    "화이팅 자기야 ☺️",
     "Are you sad that the flowers faded? 🥺",
     "Don't be.. they did exactly what they were supposed to do ☺️",
     "They reminded you that someone far away was thinking of you every single day 🥹",
@@ -75,7 +97,7 @@ const FLOWER_GIFT_URL = 'https://sodagift.com/ko/welcome/gift-links/2229133?t=3k
 let lockedTapCount = 0;
 
 function initCountdown() {
-    // HARD LOCK — always show locked page during development
+    // HARD LOCK , always show locked page during development
     // Change DEV_LOCK to false when ready to use the real timer
     const DEV_LOCK = true;
 
@@ -84,12 +106,14 @@ function initCountdown() {
     if (isFlight) {
         document.getElementById('locked-page').classList.add('hidden');
         document.getElementById('landing').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
         return;
     }
 
-    // Show locked page immediately — no waiting
+    // Show locked page immediately , no waiting
     document.getElementById('locked-page').classList.remove('hidden');
     document.getElementById('landing').classList.add('hidden');
+    document.body.style.overflow = 'hidden';
     updateCountdownTimer();
     setInterval(updateCountdownTimer, 1000);
 
@@ -298,7 +322,7 @@ function tapCheckin() {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
             subject: `Sunny says ${greeting}`,
-            message: `Sunny says "${greeting}" — ${kstTime} KST`,
+            message: `Sunny says "${greeting}" , ${kstTime} KST`,
             period: period,
             time_kst: kstTime
         })
@@ -326,7 +350,7 @@ function tapSticker(el, type) {
 }
 
 // ==========================================
-// BACKGROUND MUSIC — 想见你
+// BACKGROUND MUSIC , 想见你
 // ==========================================
 
 let musicPlaying = false;
@@ -343,7 +367,7 @@ function startMusic() {
             btn.textContent = '🎶';
         });
     }).catch(() => {
-        // Browser blocked it — will try again on next tap
+        // Browser blocked it , will try again on next tap
         musicPlaying = false;
     });
 }
@@ -372,8 +396,8 @@ const envelopes = [
         emoji: '✈️',
         title: "You're at the Airport",
         subtitle: 'For when it finally begins',
-        question: "What did I tell you to drink for me during our first week talking?",
-        hint: "June 12... I asked you to get one for me 🥹",
+        question: "What did KC tell you to drink for him during our first week talking?",
+        hint: "June 12... KC asked you to get one for him 🥹",
         answers: ['boba', 'boba tea', 'bubble tea'],
         choices: ['Coffee ☕', 'Boba tea 🧋', 'Soju 🍶', 'Orange juice 🍊'],
         correctChoice: 1,
@@ -384,7 +408,7 @@ const envelopes = [
         emoji: '🥹',
         title: "You Miss Me",
         subtitle: "I miss you too, 자기야",
-        question: "What's my signature photo pose that you caught me doing in every picture?",
+        question: "What's KC's signature photo pose that you caught him doing in every picture?",
         hint: "You noticed it and never let me live it down 😤",
         answers: ['hands in pockets'],
         choices: ['Peace sign ✌️', 'Hands in pockets 👖', 'Holding a suitcase 🧳', 'Arms crossed 😤'],
@@ -396,8 +420,8 @@ const envelopes = [
         emoji: '🎮',
         title: "You're Bored",
         subtitle: 'How well do you know KC?',
-        question: "What board game did I win 7 out of 8 times?",
-        hint: "We played it at my friend's game night 🙂",
+        question: "What board game did KC win 7 out of 8 times?",
+        hint: "We played it at KC's friend's game night 🙂",
         answers: ['codenames'],
         choices: ['Monopoly 🎩', 'Codenames 🕵️', 'Uno 🃏', 'Catan 🏝️'],
         correctChoice: 1,
@@ -406,21 +430,21 @@ const envelopes = [
     {
         id: 'hungry',
         emoji: '🍜',
-        title: "You're Hungry",
-        subtitle: 'Our food bucket list',
-        question: "What did I say I'd always have stocked in my fridge for you?",
-        hint: "You were at a cafe and I made a mental note 😌",
+        title: "You Want to See Our Future",
+        subtitle: 'Our bucket list for everything',
+        question: "What did KC say he'd always have stocked in his fridge for you?",
+        hint: "You were at a cafe and KC made a mental note 😌",
         answers: ['desserts', 'dessert'],
         choices: ['Buldak 🔥', 'Kimchi 🥬', 'Desserts 🍰', 'Ramen 🍜'],
         correctChoice: 2,
-        content: 'getHungryContent'
+        content: 'getBucketListContent'
     },
     {
         id: 'nervous',
         emoji: '🥺',
         title: "You're Nervous About Meeting Me",
         subtitle: "Read this. I promise it helps.",
-        question: "What did I promise we'd do even if we're too scared for the big rollercoasters?",
+        question: "What did KC promise we'd do even if we're too scared for the big rollercoasters?",
         hint: "Something... spinny... and childish 🤭",
         answers: ['kids rides', 'teacups', 'spinning cups'],
         choices: ['Watch other people scream 😂', 'Eat funnel cake instead 🍩', 'Go on the kids rides 🎠', 'Leave immediately 🏃'],
@@ -429,22 +453,22 @@ const envelopes = [
     },
     {
         id: 'cant-sleep',
-        emoji: '🌙',
-        title: "You Can't Sleep",
-        subtitle: 'Our best moments, timestamped',
-        question: "What time was it for me during our first real-time conversation?",
-        hint: "I refused to sleep... you kept telling me to go to bed 😤",
+        emoji: '📅',
+        title: "You Want to Relive Our Story",
+        subtitle: 'June 11 to August 23, day by day',
+        question: "What time was it for KC during our first real-time conversation?",
+        hint: "KC refused to sleep... you kept telling him to go to bed 😤",
         answers: ['3am', '4am', '3', '4'],
         choices: ['11pm 🌆', '1am 🌙', '3am 😵', '6am ☀️'],
         correctChoice: 2,
-        content: 'getMemoriesContent'
+        content: 'getTimelineContent'
     },
     {
         id: 'voice',
         emoji: '🎧',
-        title: "You Want to Hear My Voice",
-        subtitle: 'Press play, close your eyes',
-        question: "What Chinese phrase did you guess correctly from my voice message?",
+        title: "You Can't Sleep",
+        subtitle: 'Close your eyes, press play',
+        question: "What Chinese phrase did you guess correctly from KC's voice message?",
         hint: "You figured it out from a song... 想见你",
         answers: ['i miss you', 'wo xiang ni'],
         choices: ['你好 (Hello) 👋', '我好想你 (I miss you) 🥹', '我爱你 (I love you) ❤️', '晚安 (Goodnight) 🌙'],
@@ -463,104 +487,80 @@ const envelopes = [
         correctChoice: 1,
         content: 'getPhotosContent'
     },
-    {
-        id: 'future',
-        emoji: '🌸',
-        title: "You Want to See Our Future",
-        subtitle: 'Everything waiting for us',
-        question: "What color am I buying everything in for you?",
-        hint: "Your iPhone, your tumbler, your whole life... 💗",
-        answers: ['pink'],
-        choices: ['Black 🖤', 'Pink 💗', 'Purple 💜', 'Red ❤️'],
-        correctChoice: 1,
-        content: 'getFutureContent'
-    },
     // ==========================================
-    // BONUS ENVELOPES — "Never Seen" photo unlocks
+    // BONUS ENVELOPES , "Never Seen" photo unlocks
     // ==========================================
     {
-        id: 'sapporo-paths',
-        emoji: '🗼',
-        title: "Our Paths Almost Crossed",
-        subtitle: 'Sapporo... one year apart',
-        question: "What famous tower in Sapporo was I standing in front of while you were there a year later?",
-        hint: "You told me you went there too... and I was literally smiling 😤",
-        answers: ['tv tower'],
-        choices: ['Clock Tower 🕰️', 'TV Tower 📡', 'Sapporo Dome 🏟️', 'A random lamp post 🙄'],
+        id: 'bathroom-selfies',
+        emoji: '🪞',
+        title: "You're wondering what's in my pocket'",
+        subtitle: 'Snacks.. always snacks for you 😊',
+        question: "What did you always ask about KC's bathroom selfies?",
+        hint: "It became our little game... 🫣",
+        answers: ['whats in your pocket', 'pocket', 'hiding'],
+        choices: ['Why is it so clean? 🧹', "What's in your pocket? 👖", 'Where are the towels? 🛁', 'Who took the photo? 📸'],
         correctChoice: 1,
-        content: 'getSapporoContent'
+        content: 'getBathroomContent'
     },
     {
-        id: 'farm-tractor',
-        emoji: '🚜',
-        title: "The Tractor at Farm Tomita",
-        subtitle: "We were there. Same fields. Different years.",
-        question: "What flavor was the ice cream you were eating when you sent me your first Farm Tomita photo?",
-        hint: "It was purple... and cold... 🍦",
-        answers: ['lavender'],
-        choices: ['Melon 🍈', 'Lavender 💜', 'Strawberry 🍓', 'Matcha 🍵'],
+        id: 'crossed-paths',
+        emoji: '✨',
+        title: "You Want to See Where Our Paths Almost Crossed",
+        subtitle: 'Same places. Different years. One fate.',
+        question: "What place did we BOTH visit in Hokkaido, one year apart?",
+        hint: "You said it was your favorite place that day 💜",
+        answers: ['blue pond', 'farm tomita'],
+        choices: ['Otaru Canal 🏮', 'Blue Pond / Farm Tomita 💜', 'Asahiyama Zoo 🐧', 'Sapporo Tower 🗼'],
         correctChoice: 1,
-        content: 'getFarmTractorContent'
+        content: 'getCrossedPathsContent'
     },
     {
-        id: 'snack-game',
-        emoji: '🦐',
-        title: "The Emoji Hiding Game",
-        subtitle: "You always find my hiding spots 😤",
-        question: "What snack did I hide on top of my pull-up bar?",
-        hint: "It's a protein bar with a green wrapper 🟢",
-        answers: ['nugo', 'nugo bar', 'protein bar'],
-        choices: ['Mentos 🫧', 'NuGo bar 💪', 'Ginger Ale 🥤', 'Shrimp crackers 🦐'],
+        id: 'young-me',
+        emoji: '👶',
+        title: "You Want to See Young KC",
+        subtitle: 'Helmet hair era. No refunds.',
+        question: "What did KC's hair look like as a kid?",
+        hint: "You've seen the evidence... 😭",
+        answers: ['helmet', 'bowl'],
+        choices: ['Mullet 🤘', 'Helmet hair 🪖', 'Bald 👨‍🦲', 'Mohawk 🦅'],
         correctChoice: 1,
-        content: 'getSnackContent'
+        content: 'getYoungMeContent'
     },
     {
-        id: 'alpaca-friend',
-        emoji: '🦙',
-        title: "The Alpaca Situation",
-        subtitle: 'You said you were jealous... 😤',
-        question: "What animal in Hokkaido did I get too friendly with?",
-        hint: "You said you were jealous of it 🤭",
-        answers: ['alpaca'],
-        choices: ['A deer 🦌', 'An alpaca 🦙', 'A cat 🐱', 'A penguin 🐧'],
+        id: 'videos',
+        emoji: '🎬',
+        title: "You Want to Watch Our Videos",
+        subtitle: 'Press play. Remember us.',
+        question: "What game night were you trying to hear KC's voice at for the first time?",
+        hint: "You were listening so hard for KC... 🎲",
+        answers: ['board game', 'codenames', 'birthday'],
+        choices: ['Karaoke night 🎤', 'Board game night 🎲', 'Pool party 🏊', 'Movie night 🍿'],
         correctChoice: 1,
-        content: 'getAlpacaContent'
+        content: 'getVideosContent'
     },
     {
-        id: 'mt-fuji',
-        emoji: '🌄',
-        title: "6am Mt. Fuji Energy",
-        subtitle: 'This is what morning KC looks like',
-        question: "What time was it for me during our first real-time chat? (You kept telling me to go to sleep!)",
-        hint: "I refused to sleep... I was stubborn 😤",
-        answers: ['3am', '4am', '3', '4'],
-        choices: ['Midnight 🌑', '2am 😴', '3am 😵', '5am ☀️'],
-        correctChoice: 2,
-        content: 'getMtFujiContent'
-    },
-    {
-        id: 'fog-city',
-        emoji: '🌫️',
-        title: "Mystery Man in the Fog",
-        subtitle: 'Before Texas, before you...',
-        question: "What Chinese city was I in that's famous for hotpot and fog?",
-        hint: "I told you about the fog there... 🌶️",
-        answers: ['chongqing'],
-        choices: ['Shanghai 🌃', 'Beijing 🏯', 'Chongqing 🌫️', 'Guangzhou 🌺'],
-        correctChoice: 2,
-        content: 'getFogContent'
-    },
-    {
-        id: 'drama-actor',
-        emoji: '😊',
-        title: "The Smile You Always Ask For",
-        subtitle: "Fine. You win.",
-        question: "What kind of drama actor did you say I look like?",
-        hint: "You said Chinese or Japanese... 🎬",
-        answers: ['chinese', 'japanese'],
-        choices: ['K-drama actor 🇰🇷', 'Chinese/Japanese drama actor 🎬', 'Hollywood actor 🎥', 'Bollywood actor 💃'],
+        id: 'stickers',
+        emoji: '🎨',
+        title: "You Want to See Our Stickers",
+        subtitle: 'Every sticker has a story',
+        question: "What did KC call himself that Sunny insisted was an apple?",
+        hint: "It was about a fruit... or vegetable... 🧅",
+        answers: ['onion', 'apple'],
+        choices: ['Potato 🥔', 'Onion (but she said apple) 🧅', 'Tomato 🍅', 'Banana 🍌'],
         correctChoice: 1,
-        content: 'getDramaContent'
+        content: 'getStickersContent'
+    },
+    {
+        id: 'crossword',
+        emoji: '✏️',
+        title: "You Want a Challenge",
+        subtitle: 'A crossword puzzle about us',
+        question: "What's the name of the boba shop KC always goes to in Austin?",
+        hint: "Chi Cha... something... 🧋",
+        answers: ['chi cha san chen', 'chi cha'],
+        choices: ['HeyTea 🫧', 'Chi Cha San Chen 🧋', 'Tiger Sugar 🐯', 'Gong Cha 🍵'],
+        correctChoice: 1,
+        content: 'getCrosswordContent'
     },
     {
         id: 'landing-tx',
@@ -610,6 +610,7 @@ function enterApp() {
     }
     document.getElementById('landing').classList.add('hidden');
     document.getElementById('envelopes').classList.remove('hidden');
+    document.body.style.overflow = '';
     renderEnvelopes();
 }
 
@@ -705,7 +706,7 @@ function openEnvelope(id) {
     grid.innerHTML = '';
 
     if (env.id === 'with-me') {
-        // Special: text input — she has to say it to his face and type it
+        // Special: text input , she has to say it to his face and type it
         grid.innerHTML = `
             <input type="text" id="password-input" class="choice-input" placeholder="Type your answer..." autocomplete="off" autocapitalize="none">
             <button class="unlock-btn" onclick="checkTypedAnswer()">Unlock 💗</button>
@@ -775,7 +776,7 @@ function pickChoice(idx) {
             renderEnvelopes();
         }, 1200);
     } else {
-        // Wrong — show angry message, shake the button
+        // Wrong , show angry message, shake the button
         const errorEl = document.getElementById('password-error');
         errorEl.textContent = wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
         errorEl.classList.remove('hidden');
@@ -857,8 +858,8 @@ function getAirportContent() {
     return `
         <h2 class="section-title">You're at the Airport ✈️</h2>
         <div class="message-text">
-            <p>Hey you ☺️</p>
-            <p>I can't believe this day is finally here. Do you remember our very first conversation?</p>
+            <p>My Sunny ☺️</p>
+            <p>I can't believe this day is finally here! Do you remember our very first conversation?</p>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Hi! It's me. Sunny! 😊<div class="bubble-time">Jun 11, 5:57 AM</div></div>
@@ -872,12 +873,12 @@ function getAirportContent() {
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>But honestly… I think I've started to have a reason to look forward to going back to Texas. 😂 Maybe that's why staying here for so long suddenly feels a little too long.<div class="bubble-time">Jun 15, 1:37 AM</div></div>
         </div>
         <div class="message-text">
-            <p>Well, that reason has been counting down every single day. And today, that countdown finally hits zero.</p>
-            <p>I'm so proud of you for finishing your summer, for spending beautiful time with your family, and for being patient with this whole distance thing. You handled it all with that effortless positivity that made me fall for you in the first place.</p>
-            <p>Now board that plane, enjoy this little gift I made for you, and know that someone in Texas is smiling like an idiot right now thinking about you.</p>
-            <p>See you so, so soon.</p>
+            <p>That reason has been counting down every single day... And today, that countdown finally hits zero 😊</p>
+            <p>I'm so proud of you for finishing your summer, for spending beautiful time with your family, and for being patient!</p>
+            <p>Now board that plane, enjoy our website, and know that someone in Texas is smiling like an idiot right now thinking about you 😊</p>
+            <p>See you soon.</p>
         </div>
-        <div class="message-signature">— KC ☀️</div>
+        <div class="message-signature">, Your KC ☀️</div>
     `;
 }
 
@@ -886,21 +887,33 @@ function getMissMeContent() {
         <h2 class="section-title">I Miss You Too 🥹</h2>
         <div class="message-text">
             <p>자기야... 🥹</p>
-            <p>If you're opening this, it means you miss me. And honestly? I've missed you every single day since June 11th.</p>
-            <p>I missed you when I walked past tulips at the grocery store. I missed you at the Korean bar watching your team play. I missed you when I ate buldak (the kids' version, don't judge me). I missed you every time I sent a voice message and wished I could just whisper it to you in person instead.</p>
-            <p>But here's what I want you to know: missing someone this much, from this far away, before you've even met them... that tells me everything I need to know about what we have.</p>
-            <p>You once said:</p>
+            <p>If you're opening this, it means we're both feeling that same ache right now. Because wherever I am, whatever I'm doing, I'm feeling it too.</p>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I just miss Texas a little bit. ☺️ I just have a lot of things waiting for me there.<div class="bubble-time">Jun 23</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>I'm sure whatever's waiting for you here in Texas is incredibly happy to hear that and is constantly counting down the days ☺️<div class="bubble-time">Jun 23</div></div>
+        </div>
+        <div class="message-text">
+            <p>I miss you when I walk past flowers at the grocery store. I miss you at the Korean bar watching Korea play. I miss you when I eat my baby buldak alone. I miss you every time I record a voice message and wish I could just say it to your face.</p>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>It feels a little funny to say that I miss talking to you when that was our first genuine conversation in real time, but... I miss talking to you ☺️<div class="bubble-time">Jun 24</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>You're making it really hard not to miss you even more 😭😭<div class="bubble-time">Jun 25</div></div>
+        </div>
+        <div class="message-text">
+            <p>But missing each other isn't a sad thing. It means we built something real across 10,000 miles. It means what we have matters to both of us equally. And every day apart is one day closer to together.</p>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>It feels like we've known each other for much longer than we actually have!<div class="bubble-time">Jun 25</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>Why does it feel like I've already known you forever?<div class="bubble-time">Jun 25</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Haha, you're making the distance feel even longer now 🥲 But it'll make finally meeting each other even more exciting<div class="bubble-time">Jun 25</div></div>
         </div>
         <div class="message-text">
-            <p>I felt that from day one.</p>
-            <p>So when you miss me, just hit play and close your eyes. Pretend I'm right next to you. Because soon enough, I will be. And then you'll never have to miss me from this far away again.</p>
+            <p>So when you miss me, close your eyes, press play, and know that I'm somewhere doing the same thing. Thinking of you. Counting down. Just like you are.</p>
             <p>我好想你 ☺️</p>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/miss-you-chinese.m4a')">▶</button>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-babe-miss-you-chinese.opus')">▶</button>
             <div class="audio-info">
                 <div class="audio-title">我好想你</div>
                 <div class="audio-subtitle">The voice message you replayed 10 times</div>
@@ -910,7 +923,7 @@ function getMissMeContent() {
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
             </div>
         </div>
-        <div class="message-signature">— Your hands-in-pockets boy 🥹</div>
+        <div class="message-signature">, Your hands-in-the-pocket boy 🥹</div>
     `;
 }
 
@@ -919,7 +932,7 @@ function getQuizContent() {
     quizAnswered = 0;
     return `
         <h2 class="section-title">How Well Do You Know KC? 🎮</h2>
-        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.9rem;">10 questions. No cheating. Let's see what you've got 😤</p>
+        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.9rem;">17 questions. No cheating. Let's see what you've got 😤</p>
         <div class="quiz-container" id="quiz-container">
             ${generateQuizHTML()}
         </div>
@@ -935,40 +948,40 @@ function generateQuizHTML() {
         {
             q: "What's KC's spice tolerance level?",
             options: [
-                "He adds EXTRA buldak sauce like a true Korean 🔥",
-                "He eats the kids' version and calls it a day ✅",
+                "He eats spicy x2 buldak sauce like a true Korean 🔥",
+                "He eats baby buldak only",
                 "He once cried eating mild salsa",
                 "He's secretly immune to all spice"
             ],
-            correct: 1
+            correct: 0
         },
         {
             q: "What does KC do with his hands in every photo?",
             options: [
                 "Peace sign like a true tourist ✌️",
                 "Shoves them in his pockets because he's awkward",
-                "Holds a random suitcase as a prop",
-                "Both B and C honestly"
+                "Doesn't know what to do with them",
+                "Both B and C"
             ],
             correct: 3
         },
         {
-            q: "What did KC accidentally send you with NO audio?",
+            q: "Why did KC carry a suitcase in one of his photoshoots?",
             options: [
-                "A cooking tutorial he was proud of",
-                "A video of him saying something sweet for the first time",
-                "His karaoke audition tape",
-                "A gym progress update"
+                "He's always traveling",
+                "There are snacks in the suitcase",
+                "To avoid putting his hands in his pockets 😭",
+                "He's just cool"
             ],
-            correct: 1
+            correct: 2
         },
         {
-            q: "What did KC mistake for a kangaroo?",
+            q: "Why did KC think he was an honorary Korean?",
             options: [
-                "His neighbor's large dog",
-                "A raccoon digging through his trash",
-                "A cat in the dark",
-                "His own shadow at 3am"
+                "He looks Korean",
+                "Owns more Buldak flavors than Sunny 😤",
+                "Speaks better Korean than Sunny",
+                "Secretly has a Korean passport"
             ],
             correct: 1
         },
@@ -983,14 +996,14 @@ function generateQuizHTML() {
             correct: 1
         },
         {
-            q: "What did KC groggy-text you at 6am that made no sense?",
+            q: "We're basically _____ now",
             options: [
-                '"I have my beautiful"',
-                '"I have my handsome"',
-                '"I have my sunshine"',
-                '"I have my breakfast"'
+                '"BLACKPINK 🩷🖤"',
+                '"Yin Yang"',
+                '"Milk and Cookies"',
+                '"Brother and Sister"'
             ],
-            correct: 1
+            correct: 0
         },
         {
             q: "What did KC say he'd do if you paid for a date?",
@@ -1023,14 +1036,84 @@ function generateQuizHTML() {
             correct: 2
         },
         {
-            q: "What does KC call himself?",
+            q: "What did Sunny wear to church that embarrassed her sister?",
             options: [
-                "A golden retriever",
-                "An honorary Korean",
-                "A hands-in-pockets boy",
-                "All of the above 😭"
+                "Cap + Crocs with Jibbitz 🐊",
+                "Pajamas",
+                "Gym clothes",
+                "Halloween costume"
             ],
-            correct: 3
+            correct: 0
+        },
+        {
+            q: "What insect did KC say 'actually tasted pretty good'?",
+            options: [
+                "Crickets 🦗",
+                "Ants 🐜",
+                "Scorpions 🦂",
+                "He'd never eat insects (lies)"
+            ],
+            correct: 2
+        },
+        {
+            q: "What image did KC traumatize Sunny with by telling her to Google it?",
+            options: [
+                "A spider",
+                "Balut (developing duck egg) 🥚",
+                "A centipede",
+                "His morning hair"
+            ],
+            correct: 1
+        },
+        {
+            q: "What does KC's hair look like fresh out of the shower?",
+            options: [
+                "A wet dog",
+                "A mushroom 🍄",
+                "A bird's nest",
+                "Perfectly styled (as if)"
+            ],
+            correct: 1
+        },
+        {
+            q: "KC breeds something as a hobby. What?",
+            options: [
+                "Fish 🐟",
+                "Shrimps 🦐",
+                "Snails 🐌",
+                "Frogs 🐸"
+            ],
+            correct: 1
+        },
+        {
+            q: "What drink does KC drink when he's sick (Malaysian style)?",
+            options: [
+                "Ginger tea",
+                "100 Plus (isotonic drink)",
+                "Hot lemon water",
+                "Soju (for courage)"
+            ],
+            correct: 1
+        },
+        {
+            q: "What Korean phrase did KC accidentally mess up and say 'garlic' instead?",
+            options: [
+                "I like you → garlic",
+                "Goodnight → garlic",
+                "You're pretty → onion",
+                "Thank you → kimchi"
+            ],
+            correct: 0
+        },
+        {
+            q: "KC said 'RED FLAG!!' about something. What was it?",
+            options: [
+                "She eats buldak 3x a week",
+                "She can't cook",
+                "She doesn't eat sashimi 🍣",
+                "She sleeps at 4am"
+            ],
+            correct: 2
         }
     ];
 
@@ -1064,7 +1147,7 @@ function answerQuiz(questionIdx, selectedIdx, correctIdx) {
     if (selectedIdx === correctIdx) quizScore++;
     quizAnswered++;
 
-    if (quizAnswered === 10) {
+    if (quizAnswered === 17) {
         setTimeout(showQuizScore, 600);
     }
 }
@@ -1074,13 +1157,13 @@ function showQuizScore() {
     const scoreNum = document.getElementById('quiz-final-score');
     const scoreText = document.getElementById('quiz-final-text');
 
-    scoreNum.textContent = `${quizScore} / 10`;
+    scoreNum.textContent = `${quizScore} / 17`;
 
-    if (quizScore === 10) {
+    if (quizScore === 17) {
         scoreText.textContent = "You know me better than I know myself. Come here already 😭";
-    } else if (quizScore >= 7) {
+    } else if (quizScore >= 12) {
         scoreText.textContent = "Okay you've been paying attention... I see you 🤭";
-    } else if (quizScore >= 4) {
+    } else if (quizScore >= 7) {
         scoreText.textContent = "Were you even reading my messages?! 😤😤😤";
     } else {
         scoreText.textContent = "...Are you sure you're on the right flight? 🤣";
@@ -1090,51 +1173,95 @@ function showQuizScore() {
     scoreCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function getHungryContent() {
+function getBucketListContent() {
     return `
-        <h2 class="section-title">Our Food Bucket List 🍜</h2>
+        <h2 class="section-title">Our Bucket List 🍜🌸</h2>
         <div class="message-text">
-            <p>Okay listen. When you land, here's what's waiting for you:</p>
-            <p>I know your order. Chocolate everything. Boba (mango or brown sugar). Sushi. Tteokbokki (the spicy one, fine).</p>
-        </div>
-        <div class="chat-bubbles">
-            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Come back and talk to me when you've leveled up enough to handle the original Buldak 😏<div class="bubble-time">Jun 23</div></div>
-            <div class="chat-bubble me"><span class="bubble-name">KC</span>Can I at least have a bottle of milk 🥹<div class="bubble-time">Jun 23</div></div>
-        </div>
-        <div class="message-text">
-            <p>A Paris Baguette coffee because apparently that's all you trust them for here 😤. And maybe some of that Dubai chocolate if I can find it.</p>
-            <p>But more than that — here's our official food bucket list. Every single one of these, we're doing together:</p>
+            <p>Are you excited to start our future together? </p> 
+            <p>You better be ☺️ Every time you mentioned something you haven't done, something you want to try, or somewhere you want to go, it goes into our bucket list! ☺️ </p>
         </div>
         <div class="bucket-list">
             <div class="bucket-category">
-                <div class="bucket-category-title">🍳 Dates</div>
-                <div class="bucket-item">Old Alley Hotpot (the mala one — I'll handle your spice training)</div>
-                <div class="bucket-item">Sushi date in Austin</div>
-                <div class="bucket-item">Your first real Indian curry (with backup milk, I promise)</div>
-                <div class="bucket-item">That dessert place we've BOTH been to — together this time</div>
-                <div class="bucket-item">HeyTea boba run (grape for me, mango for you)</div>
-                <div class="bucket-item">Midnight Canes run 🐔</div>
+                <div class="bucket-category-title">🍳 Food & Drink</div>
+                <div class="bucket-item">Soondubu at Anyeoung Tofu (Austin) , TOP PRIORITY</div>
+                <div class="bucket-item">Make soondubu together at home</div>
+                <div class="bucket-item">Indian food , start you on medium spice</div>
+                <div class="bucket-item">REAL tacos , carne asada, al pastor, lengua</div>
+                <div class="bucket-item">Malaysian food , rendang (try making it together)</div>
+                <div class="bucket-item">Haidilao in Austin</div>
+                <div class="bucket-item">Hot Pot at home with friends... or if we're lazy.. Haidilao</div>
+                <div class="bucket-item">Turkish delight and baklava </div>
+                <div class="bucket-item">Durian</div>
+                <div class="bucket-item">Spice challenge , your buldak vs my Indian food</div>
+                <div class="bucket-item">Franklin BBQs</div>
+                <div class="bucket-item">Terry Black</div>
+                <div class="bucket-item">Korean BBQ where YOU cook</div>
+                <div class="bucket-item">Late night Korean food run</div>
+                <div class="bucket-item">HeyTea date</div>
             </div>
             <div class="bucket-category">
-                <div class="bucket-category-title">👩‍🍳 Cooking Together</div>
-                <div class="bucket-item">Homemade gimbap picnic</div>
-                <div class="bucket-item">Nasi lemak cooking date (you: sous chef)</div>
-                <div class="bucket-item">Making hwachae together in the summer</div>
-                <div class="bucket-item">Buldak challenge: original vs original (house rules: NO extra sauce)</div>
-                <div class="bucket-item">Japanese curry — I'll actually take a good picture this time</div>
+                <div class="bucket-category-title">🎀 Activities & Dates</div>
+                <div class="bucket-item">Bouldering / rock climbing</div>
+                <div class="bucket-item">Six Flags San Antonio , tallest scariest rollercoaster</div>
+                <div class="bucket-item">Skydiving (holding hands)</div>
+                <div class="bucket-item">National park , White Sands or Big Bend</div>
+                <div class="bucket-item">Ice skating date</div>
+                <div class="bucket-item">Rollerblading (your first time)</div>
+                <div class="bucket-item">Camping trip</div>
+                <div class="bucket-item">Late night drive (you're passenger princess)</div>
+                <div class="bucket-item">Sunset dinner at my apartment</div>
+                <div class="bucket-item">Pool date , midnight by the pool just talking</div>
+                <div class="bucket-item">Museum date</div>
+                <div class="bucket-item">Board game night</div>
+                <div class="bucket-item">IMAX movie together</div>
+                <div class="bucket-item">Watch dating shows together</div>
+                <div class="bucket-item">Matching couple Crocs with Jibbitz</div>
+                <div class="bucket-item">Couple t-shirts / shoes</div>
+                <div class="bucket-item">Dye hair together , me white, you blonde</div>
+                <div class="bucket-item">Make slime/squishies together</div>
+                <div class="bucket-item">Picnic with homemade gimbap and hwachae + your favorite flowers</div>
+                <div class="bucket-item">Korean spa day</div>
+                <div class="bucket-item">Apartment hunting date</div>
+                <div class="bucket-item">Beach trip</div>
+                <div class="bucket-item">PC bang / gaming date , watch you play League</div>
+                <div class="bucket-item">Take the Attachment Styles quiz</div>
             </div>
             <div class="bucket-category">
-                <div class="bucket-category-title">🏆 Challenges</div>
-                <div class="bucket-item">Paris Baguette vs Tous Les Jours official taste test</div>
-                <div class="bucket-item">7-meal Houston food trip (yes, you're coming next time)</div>
-                <div class="bucket-item">Find a coin karaoke + eat tteokbokki after</div>
-                <div class="bucket-item">Finding the best sushi in Austin together</div>
+                <div class="bucket-category-title">� Travel</div>
+                <div class="bucket-item">Paris + Disneyland (with my French friend, double date)</div>
+                <div class="bucket-item">Disneyland</div>
+                <div class="bucket-item">Korea , Ji Soo as our tour guide</div>
+                <div class="bucket-item">Japan together</div>
+                <div class="bucket-item">Europe trip</div>
+                <div class="bucket-item">Visit Nacogdoches , explore together since you don't know all the spots either</div>
+            </div>
+            <div class="bucket-category">
+                <div class="bucket-category-title">💗 Milestones</div>
+                <div class="bucket-item">Meet in Dallas , August 23/24</div>
+                <div class="bucket-item">Celebrate 100th day</div>
+                <div class="bucket-item">First home-cooked meal together</div>
+                <div class="bucket-item">Write you a letter </div>
+                <div class="bucket-item">Attend your next recital 🎻</div>
+            </div>
+            <div class="bucket-category">
+                <div class="bucket-category-title">� Things I'll Stock For You</div>
+                <div class="bucket-item">Buldak (original + rose)</div>
+                <div class="bucket-item">Homerun ball, banana kick, turtle chips mala</div>
+                <div class="bucket-item">Coke Zero</div>
+                <div class="bucket-item">Chocolate desserts always in the fridge</div>
+                <div class="bucket-item">Mint chocolate ice cream</div>
+                <div class="bucket-item">Pink things that remind me of you</div>
+                <div class="bucket-item">Thick blankets</div>
+                <div class="bucket-item">Iced Americano supplies</div>
+                <div class="bucket-item">Pocari Sweat</div>
+                <div class="bucket-item">Squishies / stress toys</div>
+                <div class="bucket-item">Couple Crocs + Jibbitz</div>
             </div>
         </div>
-        <div class="message-text">
-            <p>I told you I had a list. This is just the food section. 🙂</p>
+        <div class="message-text" style="margin-top:1.5rem;">
+            <p>Every one of these has your name written on it. Let's start checking them off. ☺️</p>
         </div>
-        <div class="message-signature">— Your honorary Korean chef 🇰🇷</div>
+        <div class="message-signature">, KC 🗒️✨</div>
     `;
 }
 
@@ -1142,24 +1269,41 @@ function getNervousContent() {
     return `
         <h2 class="section-title">Hey. I Know. Me Too. 🥺</h2>
         <div class="message-text">
-            <p>I know what you're feeling right now, because I'm feeling it too.</p>
-            <p>What if it's awkward? What if we run out of things to say? What if the real version of me doesn't match the texting version?</p>
-            <p>Let me tell you something: I'm nervous too. Genuinely nervous. You've seen me try to style my hair at midnight, panic about what to do with my hands, and accidentally send videos with no audio. The real me is exactly that — a little clumsy, a little goofy, and completely head over heels for you.</p>
-            <p>Here's what I want you to know:</p>
-            <p>There's no pressure. None at all. If you want to sit in the car and just listen to music for the first 10 minutes because it feels weird, we'll do that. If you want to laugh at how I look compared to my photos, go ahead (I'm bracing myself). If you need me to put my hands in my pockets so you feel less overwhelmed by my presence... I'll do that too 🥹</p>
-            <p>Remember when you said this?</p>
+            <p>Hey. I know what you're feeling right now, because I'm feeling the exact same thing.</p>
+            <p>What if it's awkward? What if we run out of things to say? What if it doesn't feel the same in person?</p>
         </div>
         <div class="chat-bubbles">
-            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>And honestly, I already feel really comfortable with you. I just wish we weren't so far apart right now. 🥺<div class="bubble-time">Jun 13, 2:45 PM</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>You seem so well dressed it kinda makes me nervous about meeting you hahaha!<div class="bubble-time">Jun 19</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Don't be nervous! I only dress up when I'm taking pictures. Most of the time I'm just wearing whatever is comfortable. 😌<div class="bubble-time">Jun 19</div></div>
         </div>
         <div class="message-text">
-            <p>That was June 13th. Just two days after we started talking. If you felt safe with me in two days over text, imagine how you'll feel when I'm actually standing in front of you.</p>
-            <p>I'm not here to impress you. I'm here because over 70+ days of talking across time zones, late nights, and thousands of messages, you became the person I want to see the most in this world.</p>
-            <p>And I meant what I said: I'd be happy going on kids' rides with you all day if that's what makes you comfortable.</p>
-            <p>But I have a feeling the second we see each other, all the nervousness will disappear and it'll feel exactly like our 3am chats — like we've known each other forever.</p>
-            <p>See you so soon, pretty girl. 🌸</p>
+            <p>I've thought about all of that too. And here's what I keep coming back to: We talked until 3am the very first time we were online together. We never ran out of things to say across a 14-hour time difference.</p>
         </div>
-        <div class="message-signature">— Your golden retriever, KC 🐕</div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I think this might be the first time we've actually been online and talking at the same time!<div class="bubble-time">Jun 23</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>I know ☺️ and yet someone just wants me gone 🥹<div class="bubble-time">Jun 23</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I don't want you gone. 😂 I just don't want to be responsible for your sleep schedule!<div class="bubble-time">Jun 23</div></div>
+        </div>
+        <div class="message-text">
+            <p>If we could do all of that without ever being in the same room... imagine what it'll be like when we finally are.</p>
+            <p>But also - if it IS a little awkward at first? That's okay. That's normal. We don't have to be perfect. We just have to be us.</p>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>I'm scared of heights, but maybe if we could hold hands through the most of it I'd be down to try<div class="bubble-time">Jun 24</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I think I'd be scared 😭😭 but maybe I'd be brave enough to try it if I had the right person with me<div class="bubble-time">Jun 24</div></div>
+        </div>
+        <div class="message-text">
+            <p>I'm not expecting you to be the violin headshot version of yourself. I'm excited to meet the jet-lagged, ramen-eating, Crocs-wearing you. The real one.</p>
+            <p>And I'll be honest - I'm going to be nervous too. My hands will be in my pockets. I might talk too fast.</p>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Honestly, I was too busy looking at your face to notice where your hands were. 😂<div class="bubble-time">Jun 23</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>And honestly, I already feel really comfortable with you. I just wish we weren't so far apart right now. 🥺<div class="bubble-time">Jun 13</div></div>
+        </div>
+        <div class="message-text">
+            <p>So take a breath. We've got this. Together. ☺️</p>
+        </div>
+        <div class="message-signature">- Your golden retriever, KC 🐕</div>
     `;
 }
 
@@ -1208,7 +1352,7 @@ function getMemoriesContent() {
             </div>
             <div class="timeline-item">
                 <div class="timeline-date">June 15</div>
-                <div class="timeline-text">You're going to Japan — to the EXACT same places I went last year.</div>
+                <div class="timeline-text">You're going to Japan and to the EXACT same places I went last year.</div>
                 <div class="chat-bubbles">
                     <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I'm going to sapporo! Have you ever been?<div class="bubble-time">7:08 PM</div></div>
                     <div class="chat-bubble me"><span class="bubble-name">KC</span>YES!!! That was my last Japan trip!!!<div class="bubble-time">7:09 PM</div></div>
@@ -1239,7 +1383,7 @@ function getMemoriesContent() {
             </div>
             <div class="timeline-item">
                 <div class="timeline-date">June 22-23, 3:52 AM</div>
-                <div class="timeline-text">Our first real-time conversation. I stayed up until 6am. You kept telling me to sleep. I refused.</div>
+                <div class="timeline-text">Our first real-time conversation. I stayed up until 6am. You kept telling me to sleep... never going to happen!!</div>
                 <div class="chat-bubbles">
                     <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Wait… isn't it like 3am over there right now? Why are u still awake??<div class="bubble-time">3:52 AM</div></div>
                     <div class="chat-bubble me"><span class="bubble-name">KC</span>Maybe I was waiting to speak with you? 🥹<div class="bubble-time">3:53 AM</div></div>
@@ -1354,75 +1498,171 @@ function getMemoriesContent() {
                 <div class="timeline-text">You're here. We made it. The distance is over. And everything that comes next? We write together. ☀️❤️</div>
             </div>
         </div>
-        <div class="message-signature">— To be continued... in person ☺️</div>
+        <div class="message-signature">, To be continued... in person ☺️</div>
     `;
 }
 function getVoiceContent() {
     return `
-        <h2 class="section-title">Press Play 🎧</h2>
+        <h2 class="section-title">Close Your Eyes, Press Play 🎧</h2>
         <div class="message-text">
-            <p>Here's a collection of voice notes just for you. Some new, some from our chats that I know you liked replaying. Hit play whenever you need me. ☺️</p>
+            <p>All our voice notes in one place. Some are mine, some are yours. Close your eyes and pretend we're next to each other. ☺️</p>
+        </div>
+        <p style="text-align:center; color:#ff6b9d; font-weight:700; margin:1rem 0 0.5rem;">KC's voice 🎙️</p>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-babe-miss-you-chinese.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">寶貝,我好想你</div><div class="audio-subtitle">Baby, I miss you so much (Chinese)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/good-morning.m4a')">▶</button>
-            <div class="audio-info">
-                <div class="audio-title">Good morning, 자기야 ☀️</div>
-                <div class="audio-subtitle">English + Chinese morning greeting</div>
-            </div>
-            <div class="audio-waves">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            </div>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-miss-you-chinese.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">我好想你</div><div class="audio-subtitle">I miss you so much (Chinese)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/miss-you.m4a')">▶</button>
-            <div class="audio-info">
-                <div class="audio-title">我好想你 (I miss you)</div>
-                <div class="audio-subtitle">The one you replayed over and over</div>
-            </div>
-            <div class="audio-waves">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            </div>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-miss-you-korean-solo.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">보고 싶어</div><div class="audio-subtitle">I miss you (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/bedtime.m4a')">▶</button>
-            <div class="audio-info">
-                <div class="audio-title">For when you're falling asleep 🌙</div>
-                <div class="audio-subtitle">The soft Chinese version you said you loved more</div>
-            </div>
-            <div class="audio-waves">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            </div>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-youre-cute-mix.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야, you're so cute</div><div class="audio-subtitle">English + Korean mix</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/something-new.m4a')">▶</button>
-            <div class="audio-info">
-                <div class="audio-title">Something new to guess 🤭</div>
-                <div class="audio-subtitle">Figure this one out, genius</div>
-            </div>
-            <div class="audio-waves">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            </div>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-i-really-like-you.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I really like you, by the way</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/for-smile.m4a')">▶</button>
-            <div class="audio-info">
-                <div class="audio-title">For when you need to smile 😊</div>
-                <div class="audio-subtitle">A silly one — I tried my best Korean</div>
-            </div>
-            <div class="audio-waves">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            </div>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-youre-cute-chinese.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">寶貝,你太可愛了</div><div class="audio-subtitle">Baby, you're so cute (Chinese)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-all-i-want-is-you-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">내가 원하는 건 너 하나 밖에 없어</div><div class="audio-subtitle">All I want is only you (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-want-to-be-with-you-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">너랑 같이 있고 싶어</div><div class="audio-subtitle">I want to be with you (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-heart-only-for-you.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야, my heart is only for you</div><div class="audio-subtitle">Korean + English mix</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-think-of-me-tonight-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">오늘 밤에 내 생각하면서 잘 거야?</div><div class="audio-subtitle">Will you think of me tonight? (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-thinking-of-you-miss-you-mix.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">네 생각 하고 있어, I miss you</div><div class="audio-subtitle">Thinking of you (Korean/English)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-you-are-most-beautiful.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">In the world, you are the most beautiful</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-how-cheer-you-up-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">어떻게 하면 기분 풀어줄 수 있어?</div><div class="audio-subtitle">How can I cheer you up? (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-want-see-pretty-face-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기 예쁜 얼굴 보고 싶어</div><div class="audio-subtitle">I want to see your pretty face (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-good-morning-eat-salad.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Good morning! Don't forget to eat salad today!</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-sleep-well-good-dream.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Sleep well, have a good dream</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-goodnight-miss-you-mix.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야, goodnight, I'll miss you</div><div class="audio-subtitle">Korean/English mix</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-miss-you-so-much-english.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I miss you so much</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-i-dont-like-you-teasing.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야, 나 안 좋아해</div><div class="audio-subtitle">Babe, I don't like you (teasing 😤)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-my-name-chinese.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">蔡光成</div><div class="audio-subtitle">KC saying his Chinese name</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <p style="text-align:center; color:#ff6b9d; font-weight:700; margin:1.5rem 0 0.5rem;">Sunny's voice ☀️</p>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-goodnight-so-happy.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Good night. Thank you for making me so happy today.</div><div class="audio-subtitle">Her voice + 잘 자</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-miss-you-waiting-picture.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I miss you so much because I've been waiting for your picture</div><div class="audio-subtitle">Her voice</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-i-like-you-even-more.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I like you even more</div><div class="audio-subtitle">Her voice</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-practicing-my-name.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">蔡光成</div><div class="audio-subtitle">Her practicing KC's Chinese name</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-correcting-garlic.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">The garlic incident 🧄</div><div class="audio-subtitle">Her correcting KC's pronunciation</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-babe-im-shy-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야 부끄러워</div><div class="audio-subtitle">Babe, I'm shy (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-babe-youre-cute-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야 너무 귀여워</div><div class="audio-subtitle">Babe, you're so cute (Korean)</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-are-you-miss-me.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Are you miss me?</div><div class="audio-subtitle">Her cute broken English</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-your-voice-sexy.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Baby, your voice is really sexy</div><div class="audio-subtitle">Her voice</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-your-voice-comparison.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Your Chinese is deeper, English is sexier, Korean is cute</div><div class="audio-subtitle">Her ranking KC's voices</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="message-text" style="margin-top:1.5rem;">
-            <p>Your voice does the same thing to me, by the way. Every time I listen to your Korean voice messages, I can't stop smiling. I play them on loop.</p>
-            <p>See you soon so I can hear it in person ☺️</p>
+            <p>Your voice does the same thing to me. Every single one. On loop. ☺️</p>
         </div>
-        <div class="message-signature">— KC 🎙️</div>
+        <div class="message-signature">- KC 🎙️</div>
     `;
 }
 
@@ -1432,174 +1672,427 @@ function getPhotosContent() {
         <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.85rem;">Every picture tells our story. Here are the ones that made my heart race.</p>
         <div class="photo-collage">
             <div class="photo-item">
-                <img src="photos/blue-pond-her.jpg" alt="">
-                <div class="photo-caption">Your Blue Pond — June 17 🩵</div>
-            </div>
-            <div class="photo-item wide">
-                <div class="locked-photo" onclick="unlockPhoto(this, 'bluepond-q')">
-                    <img src="photos/blue-pond-me.jpg" alt="">
-                    <div class="locked-photo-overlay">
-                        <span class="lock-emoji">🔒</span>
-                        <p>Tap to unlock</p>
-                    </div>
-                </div>
-                <div class="photo-caption">My Blue Pond — ? 🩵</div>
-            </div>
-        <div id="bluepond-q" class="photo-question hidden"><div class="photo-question-inner">
-            <p style="font-weight:700; margin-bottom:0.8rem;">How many months apart were we at the Blue Pond?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">6 months</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">12 months</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">3 months</button>
-            </div>
-        </div></div>
-            <div class="photo-item wide">
-                <img src="photos/farm-tomita-her.jpg" alt="">
-                <div class="photo-caption">Farm Tomita — "I couldn't remember the name, so in my head it was just the lavender field" 💜</div>
-            </div>
-            <div class="photo-item">
                 <img src="photos/violin-headshot.jpg" alt="">
-                <div class="photo-caption">The violin headshot that broke me 🎻 "OHHHH MYYY GOOOSSHHH"</div>
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
-            <!-- PERSONAL MESSAGE: violin headshot -->
-            <div class="photo-message"></div>
             <div class="photo-item">
-                <img src="photos/recital-dress.jpg" alt="">
-                <div class="photo-caption">Your recital in the red dress 🌹 I wished I'd met you 2 months earlier</div>
+                <img src="photos/violin-professional.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
-            <!-- PERSONAL MESSAGE: recital dress -->
-            <div class="photo-message"></div>
+            <div class="photo-item">
+                <img src="photos/violin-her.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/practice-room.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/recital-after.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
             <div class="photo-item">
                 <img src="photos/spain-mallorca.jpg" alt="">
-                <div class="photo-caption">Mallorca, Spain — you in a dress by the ocean. Breathtaking. 🌊</div>
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
-            <!-- PERSONAL MESSAGE: mallorca -->
-            <div class="photo-message"></div>
+            <div class="photo-item">
+                <img src="photos/mallorca-red-dress.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
             <div class="photo-item">
                 <img src="photos/ballet.jpg" alt="">
-                <div class="photo-caption">Ballet in pink — "It's not sexy tho 😂" ...wrong. 💗</div>
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
-            <!-- PERSONAL MESSAGE: ballet -->
-            <div class="photo-message"></div>
-            <div class="photo-item wide">
+            <div class="photo-item">
                 <img src="photos/ice-skating.jpg" alt="">
-                <div class="photo-caption">Central Park ice skating 🎿 "I don't fall anymore! I'm actually really good!" ...the video says otherwise 🤣</div>
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/karaoke.jpg" alt="">
-                <div class="photo-caption">Coin karaoke booth 🎤 "I randomly walked in because I just couldn't walk past it!"</div>
+                <img src="photos/skating-her.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/cafe-dessert.jpg" alt="">
-                <div class="photo-caption">The cafe with the lavender ice cream 🍦 "Wrong answer!! 😤" "Okay it supposed to be talking with you 🤭"</div>
+                <img src="photos/beach-her.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/world-cup.jpg" alt="">
-                <div class="photo-caption">World Cup night 🇰🇷 We watched together across the world</div>
+                <img src="photos/beach-her-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/tulips.jpg" alt="">
-                <div class="photo-caption">The tulips I stared at for 10 minutes because they reminded me of you 🌷</div>
-            </div>
-            <div class="photo-item wide">
-                <img src="photos/prada-marfa.jpg" alt="">
-                <div class="photo-caption">Prada Marfa — I brought a suitcase just to have a prop. You caught my hands in my pockets AGAIN 😤</div>
+                <img src="photos/france-selfie.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/somi-somi.jpg" alt="">
-                <div class="photo-caption">Somi Somi dessert 🍦 Another place we'd both been. "Maybe we're meant to be 😊"</div>
+                <img src="photos/library-pink-skirt.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/hair-styling.jpg" alt="">
-                <div class="photo-caption">Singapore 💇‍♂️ "Your hair looks so cool!" — noted forever</div>
+                <img src="photos/bunny-costume.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
-                <img src="photos/buldak.jpg" alt="">
-                <div class="photo-caption">The spicy tteokbokki you challenged me to try. I'm scared. 🔥</div>
+                <img src="photos/earrings-pretty.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/her-with-friend.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/photobooth.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/changing-room.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/zara-fitting.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/church-no-crocs.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/her-crocs.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bikini-sticker.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/first-flowers.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/first-flowers-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/austin-begging-sticker.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/good-morning-spam.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
             <div class="photo-item">
                 <img src="photos/cat.jpg" alt="">
-                <div class="photo-caption">Your cat 🐱 "So cuuuuttteee I just wanna cuddle her!!" ...I don't see you though 😤</div>
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
-            <!-- PERSONAL MESSAGE: cat -->
-            <div class="photo-message"></div>
-            <div class="photo-item wide">
-                <img src="photos/stickers.jpg" alt="">
-                <div class="photo-caption">The sticker war of July 26th — you turned us both into stickers 🤣</div>
+            <div class="photo-item">
+                <img src="photos/tulips.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
-            <!-- PERSONAL MESSAGE: stickers -->
-            <div class="photo-message"></div>
-        </div>
-        <div style="margin-top:1.5rem;">
-            <p style="font-size:0.85rem; color:#8b6b7a; text-align:center; margin-bottom:0.75rem;">Some of my favorite reactions to your photos:</p>
-            <div class="chat-bubbles">
-                <div class="chat-bubble me"><span class="bubble-name">KC</span>OMG that's so pretty 🙂 both you and the pond!!<div class="bubble-time">Jun 17</div></div>
-                <div class="chat-bubble me"><span class="bubble-name">KC</span>OHHHH MYYY GOOOSSHHH You're so beautiful 😭<div class="bubble-time">Jun 21</div></div>
-                <div class="chat-bubble me"><span class="bubble-name">KC</span>My gosh you look amazingggg in that red dress 😍<div class="bubble-time">Jun 29</div></div>
-                <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Its not sexy tho 😂<div class="bubble-time">Jul 26</div></div>
-                <div class="chat-bubble me"><span class="bubble-name">KC</span>What do you mean it's not sexy.. you already have that sexy model face 😭<div class="bubble-time">Jul 26</div></div>
-                <div class="chat-bubble me"><span class="bubble-name">KC</span>I keep having to scroll up to look at yours 🥹 you're soooo pretty 😭<div class="bubble-time">Jun 23</div></div>
+            <div class="photo-item">
+                <img src="photos/smiling-me-fav.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/smiling-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/celebrity-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/photoshoot-short-hair.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/hokkaido-fav.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/hokkaido-golden-hour.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/hokkaido-touching-sun.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/hokkaido-failed-sun.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/japan-flowers.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/japan-flowers-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/japan-front-of-garden.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/kamui-rock.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/alpaca-flirt.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/alpaca-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/chongqing-valley.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/chongqing-fog.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/houston-friends.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/houston-cool.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/prada-marfa.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/prada-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/singapore-hair.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/silly-chair-sticker.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/onion-apple-sticker.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/cute-sticker.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/soft-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/car-selfie-nervous.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/car-white-hat.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/pimple-patch.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/grandpa-emulate.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/gym-selfie.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/gym.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/too-thin-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/big-bend-1.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/big-bend-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/new-york-friends.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/new-york-solo.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/portland-friends.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/pre-portland-crew.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/sapporo-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/mt-fuji-morning.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/stone-hedge-pose.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/shrimp-cracker.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/neverseen-farm-tomita-road.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/neverseen-hakodate-road.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/neverseen-photoshoot.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/neverseen-wedding-suit.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/kc-cowboy.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/posing-1.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/old-school.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/funny-shirt.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/petting-dog.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/my-seung-cup.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/misidentified.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/suit.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/jollibee.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/drunk-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/drunk-me-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/drunk-me-3.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/pimple-patch (2).jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/apple (2).jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260615-WA0005.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260615-WA0009.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260622-WA0000.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260628-WA0015.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260710-WA0008.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260719-WA0026.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260722-WA0051.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260722-WA0058.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260723-WA0002.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260724-WA0017.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260724-WA0020.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260724-WA0021.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260727-WA0016.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260727-WA0029.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/IMG-20260806-WA0009.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
         </div>
         <div class="message-text" style="margin-top:1.5rem;">
             <p>Every single photo you sent me is saved. Every video replayed dozens of times. Every sticker screenshot'd and smiled at.</p>
             <p>I can't wait to fill our camera rolls with photos of us together. Starting very, very soon. ☺️</p>
         </div>
-        <div class="message-signature">— KC 📷</div>
-    `;
-}
-
-function getFutureContent() {
-    return `
-        <h2 class="section-title">Our Future 🌸</h2>
-        <div class="message-text">
-            <p>Every time you mentioned something you haven't done, something you want to try, or somewhere you want to go — I wrote it down. This is our list. Not mine. Ours.</p>
-            <p>We're going to check these off together, one by one, at whatever pace makes you happy. No rush. No pressure. Just us exploring life side by side.</p>
-        </div>
-        <div class="bucket-list">
-            <div class="bucket-category">
-                <div class="bucket-category-title">🌸 First Dates</div>
-                <div class="bucket-item">Our first hug at the airport</div>
-                <div class="bucket-item">Picnic date with homemade gimbap, hwachae, and your favorite flowers</div>
-                <div class="bucket-item">Boba date at my favorite shop (the one that made me think of you)</div>
-                <div class="bucket-item">Sushi date in Austin</div>
-                <div class="bucket-item">That dessert place in Austin we've BOTH been to — together this time</div>
-                <div class="bucket-item">Fancy dinner where I finally wear the suit 😌</div>
-            </div>
-            <div class="bucket-category">
-                <div class="bucket-category-title">🎀 Adventures</div>
-                <div class="bucket-item">Six Flags San Antonio (teacups first, rollercoasters if you're brave)</div>
-                <div class="bucket-item">Rock climbing / bouldering (baby skin princess hands club)</div>
-                <div class="bucket-item">Ice skating / rollerblading date in Austin</div>
-                <div class="bucket-item">National park trip (White Sands or Big Bend)</div>
-                <div class="bucket-item">San Diego beach trip 🏖️</div>
-                <div class="bucket-item">Camping under the stars</div>
-                <div class="bucket-item">Skydiving (holding hands the ENTIRE time)</div>
-            </div>
-            <div class="bucket-category">
-                <div class="bucket-category-title">🎶 Together Things</div>
-                <div class="bucket-item">Coin karaoke (even if we have to drive to Houston)</div>
-                <div class="bucket-item">Cooking nasi lemak together (you: sous chef)</div>
-                <div class="bucket-item">Board game night (I'll teach you Codenames properly)</div>
-                <div class="bucket-item">Ballet class (I'll probably fall, you'll probably laugh)</div>
-                <div class="bucket-item">Gym dates in basic outfits 🏋️</div>
-                <div class="bucket-item">Watch your next performance from the front row 🎻</div>
-                <div class="bucket-item">Drive around Austin with you as passenger princess</div>
-            </div>
-            <div class="bucket-category">
-                <div class="bucket-category-title">🌍 Someday</div>
-                <div class="bucket-item">Korea together (you show me Seoul, I eat all the tteokbokki)</div>
-                <div class="bucket-item">Paris 🇫🇷</div>
-                <div class="bucket-item">Japan again — same places, same time, finally together</div>
-                <div class="bucket-item">Malaysia (I'll introduce you to my family + real nasi lemak)</div>
-                <div class="bucket-item">Spain (Mallorca again — but this time with me)</div>
-                <div class="bucket-item">New Year's ball drop together 🎊</div>
-            </div>
-        </div>
-        <div class="message-text">
-            <p>Every one of these has your name written on it. Let's start checking them off. ☺️</p>
-        </div>
-        <div class="message-signature">— KC 🗒️✨</div>
+        <div class="message-signature">, KC 📷</div>
     `;
 }
 
@@ -1618,7 +2111,7 @@ function getLandingContent() {
             <p>I told you once that you're entirely worth the wait. I meant every word.</p>
             <p>Now let's go start our list. ☺️</p>
         </div>
-        <div class="message-signature">— Your honorary Korean 🇰🇷<br>original buldak level: kids' edition<br>hands-in-pockets champion<br>golden retriever<br>자기야's KC ❤️</div>
+        <div class="message-signature">, Your honorary Korean 🇰🇷<br>original buldak level: kids' edition<br>hands-in-pockets champion<br>golden retriever<br>자기야's KC ❤️</div>
         <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff0f5,#ffeef8); border-radius:16px;">
             <div style="font-family:'Caveat',cursive; font-size:1.5rem; color:#ff6b9d;">To be continued... in person ☺️</div>
         </div>
@@ -1637,7 +2130,7 @@ function getWithMeContent() {
             <p>72 days. Thousands of messages. One timezone. And now... zero distance.</p>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/with-you.m4a')">▶</button>
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her practicing my name.opus')">▶</button>
             <div class="audio-info">
                 <div class="audio-title">For us, right now ☺️</div>
                 <div class="audio-subtitle">Press play together.</div>
@@ -1656,7 +2149,7 @@ function getWithMeContent() {
             <div style="font-size:1rem; color:#4a3040; text-decoration:line-through; opacity:0.7;">☐ Our first hug</div>
             <div style="font-size:1rem; color:#4a3040; font-weight:700; margin-top:0.25rem;">☑️ Done. Finally. ☺️</div>
         </div>
-        <div class="message-signature">— Us. Finally here. ❤️</div>
+        <div class="message-signature">, Us. Finally here. ❤️</div>
     `;
 }
 
@@ -1691,7 +2184,7 @@ function playAudio(btn, src) {
         btn.textContent = '⏸';
         wavesEl.classList.add('playing');
     }).catch(() => {
-        // Audio file not found — show placeholder behavior
+        // Audio file not found , show placeholder behavior
         btn.textContent = '▶';
         wavesEl.classList.remove('playing');
     });
@@ -1703,219 +2196,579 @@ function playAudio(btn, src) {
 }
 
 // ==========================================
-// BONUS CONTENT — "Never Seen" Photo Unlocks
+// BONUS CONTENT , "Never Seen" Photo Unlocks
 // ==========================================
 
-function getSapporoContent() {
+function getBathroomContent() {
     return `
-        <h2 class="section-title">Our Paths Almost Crossed 🗼</h2>
+        <h2 class="section-title">The Bathroom Selfie Era 🪞</h2>
         <div class="message-text">
-            <p>You know how we kept saying our paths crossed in spirit?</p>
-            <p>Well... I was literally standing somewhere in Sapporo. Smiling. At a spot you walked past a year later.</p>
-            <p>Tap the photo to unlock it ☺️</p>
+            <p>It all started when I hid my bathroom stuff behind emojis. Then you asked the question that started it all...</p>
         </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'sapporo-q')">
-            <img src="photos/sapporo-me.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
+        <div class="photo-collage">
+        <div class="photo-item">
+            <img src="photos/bathroom-selfies/hiding-early.jpg" alt="">
+            <div class="photo-caption"><!-- CAPTION --></div>
+        </div>
+        <div class="photo-item">
+            <img src="photos/bathroom-selfies/hiding-game-og.jpg" alt="">
+            <div class="photo-caption"><!-- CAPTION --></div>
+        </div>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Whats in your porcket?!<div class="bubble-time">Jul 27</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>Omg<div class="bubble-time">Jul 27</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>I need more stickers in my picture next time hahaha<div class="bubble-time">Jul 27</div></div>
+        </div>
+        <div class="photo-collage">
+        <div class="photo-item">
+            <img src="photos/bathroom-selfies/hiding-mentos.jpg" alt="">
+            <div class="photo-caption"><!-- CAPTION --></div>
+        </div>
+        <div class="photo-item">
+            <img src="photos/bathroom-selfies/hiding-pocket.jpg" alt="">
+            <div class="photo-caption"><!-- CAPTION --></div>
+        </div>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>What's in your pocket?!<div class="bubble-time">Jul 28</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I didnt hide anything<div class="bubble-time">Jul 28</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Unlike you<div class="bubble-time">Jul 28</div></div>
+        </div>
+        <div class="message-text">
+            <p>But you knew well enough that I could never hide things from you... </p>
+        </div>
+        <div class="photo-collage">
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/hiding-snacks-ac.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/hiding-ginger-ale.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/hiding-1a.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/hiding-1b.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
         </div>
-        <div id="sapporo-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What landmark am I standing in front of?</p>
+        <div class="message-text">
+            <p>You've always been quite an analyzer... I love that whenever I sent you pictures.. I could always expect you to disappear for 10 minutes 🤣</p>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Dont worry I saw your handsome face too And I noticed your hand in your pocket as well 🤭<div class="bubble-time">Jun 28</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>I'm sooooo maaadd hahahaha i forgot about the hands in the pocket 😭😭😭<div class="bubble-time">Jun 28</div></div>
+        </div>
+        <div class="photo-collage">
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/bathroom.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/corgi-shirt.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/work-cap-lazy.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/banana-republic-jacket.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/sticker-no-phone.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/IMG-20260718-WA0016.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/IMG-20260721-WA0009.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/IMG-20260727-WA0022.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/IMG-20260803-WA0012.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/bathroom-selfies/IMG-20260810-WA0006.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+        </div>
+        <div class="message-text">
+            <p>But these became one of my favorite past times... to purposely hide things around the area or in my pockets for you to spot! Can you still spot all of them without me pointing them out? 🤣</p>
+        </div>
+        <div class="message-signature">, The guy who can't hide anything from you 😤</div>
+    `;
+}
+
+function getCrossedPathsContent() {
+    return `
+        <h2 class="section-title">Where Our Paths Crossed ✨</h2>
+        <div class="message-text">
+            <p>Separated by 100 miles before we met when you were at Nacododghes... 10,000 miles after we started talking when you returned to Korea for the summer... but yet... fate played a funny trick on us by bringing us to two of the same exact locations in Japan, one year apart...</p>
+            <p>Same places. Different years. One fate that kept pushing us closer until today.</p>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I think this might be the same place! 😄<div class="bubble-time">Jun 17</div></div>
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>Hahaha OMG yes i think so?!?! You must've been to the farm tomita?!?! The lavender/melon ice cream?<div class="bubble-time">Jun 17</div></div>
+        </div>
+        <div class="photo-collage">
+            <div class="photo-item">
+                <img src="photos/when-we-crossed-paths/blue-pond-her.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <div class="locked-photo" onclick="unlockPhoto(this, 'bluepond-cross-q')">
+                    <img src="photos/when-we-crossed-paths/blue-pond-me-neverseen.jpg" alt="">
+                    <div class="locked-photo-overlay">
+                        <span class="lock-emoji">🔒</span>
+                        <p>Tap to unlock</p>
+                    </div>
+                </div>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+        </div>
+        <div id="bluepond-cross-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">How many months apart were we at the Blue Pond?</p>
             <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Clock Tower 🕰️</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">TV Tower 📡</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Sapporo Dome 🏟️</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">6 months</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">12 months</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">3 months</button>
+            </div>
+        </div></div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble me"><span class="bubble-name">KC</span>OMG that's so pretty 🙂 both you and the pond!! It feels so weird that you're at the exact same place as i was last year...<div class="bubble-time">Jun 17</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>And you're right… it's kind of wild to think we could've crossed paths without even knowing it. 😆✨<div class="bubble-time">Jun 17</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Yes, exactly! Farm Tomita! I couldn't remember the name, so in my head it was just "the lavender field." 😭<div class="bubble-time">Jun 17</div></div>
+        </div>
+        <div class="photo-collage">
+            <div class="photo-item">
+                <img src="photos/when-we-crossed-paths/farm-tomita-sign.jpg?v=2" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/when-we-crossed-paths/farm-tomita-icecream-her.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/when-we-crossed-paths/farm-tomita-icecream-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/when-we-crossed-paths/farm-tomita-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+        </div>
+        <div class="chat-bubbles">
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>And honestly, I was really happy to find out we'd visited the same places. It felt like our paths crossed, even if it was a year apart.<div class="bubble-time">Jun 19</div></div>
+            <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Maybe we're meant to be 😊<div class="bubble-time">Jun 24</div></div>
+        </div>
+        <div class="message-text" style="margin-top:1rem;">
+            <p>Yet in the end, fate was kind on us because it finally brought you to Texas ☺️</p>
+        </div>
+        <div class="message-signature">, Your Sapporo boy ✨</div>
+    `;
+}
+
+function getYoungMeContent() {
+    return `
+        <h2 class="section-title">Young KC 👶</h2>
+        <div class="message-text">
+            <p>You asked for this. No refunds. No takebacks. This is the helmet hair era.</p>
+        </div>
+        <div class="photo-collage">
+            <div class="photo-item">
+                <img src="photos/young-me/young-me.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/young-me/young-me-2.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/young-me/young-me-3.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="photo-item">
+                <img src="photos/young-me/young-helmet-hair.jpg" alt="">
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
         </div>
         <div class="message-text" style="margin-top:1rem;">
-            <p>If time travel existed, I would've turned around and waved. But I think fate did something better... it brought you to Texas instead. ☺️</p>
+            <p>I peaked late. But I peaked for you. 🥹</p>
         </div>
-        <div class="message-signature">— Your almost-crossed-paths boy 🗼</div>
+        <div class="message-signature">, Helmet hair KC 🪖</div>
     `;
 }
 
-function getFarmTractorContent() {
+function getVideosContent() {
     return `
-        <h2 class="section-title">Same Fields. Different Years. 🚜</h2>
+        <h2 class="section-title">Our Videos 🎬</h2>
         <div class="message-text">
-            <p>You were eating lavender ice cream at Farm Tomita. I was somewhere in those same fields... doing something ridiculous.</p>
-            <p>Tap the photo to unlock it ☺️</p>
+            <p>Press play. Close your eyes. Remember us.</p>
         </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'farm-q')">
-            <img src="photos/farm-tomita-tractor.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
+        <div class="video-gallery">
+            <div class="video-item">
+                <video src="videos/vid-her-flowers-thank-you.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-her-slime.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-her-bowling.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-her-skating-fall.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-board-game-voice.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-pool-texting.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-birthday.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-hair-styling-sexy.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-hair-styling-full.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-hair-pimple-patch.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-korean-encouragement.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-singapore-friends.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/vid-funny-shirt.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260626-WA0011.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260626-WA0016.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260626-WA0019.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260626-WA0022.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260627-WA0003.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260627-WA0004.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260627-WA0006.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260628-WA0041.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260629-WA0024.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260705-WA0011.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260705-WA0012.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260711-WA0003.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260718-WA0031.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260718-WA0034.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260718-WA0035.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260718-WA0037.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260720-WA0001.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260722-WA0039.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260803-WA0029.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260804-WA0005.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260805-WA0002.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260805-WA0003.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260807-WA0016.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260807-WA0018.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
+            </div>
+            <div class="video-item">
+                <video src="videos/VID-20260808-WA0030.mp4" controls preload="none"></video>
+                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
         </div>
-        <div id="farm-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What am I sitting on in this photo?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A bench 🪑</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">A tractor 🚜</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A lavender bush 💜</button>
-            </div>
-        </div>
-        <div class="message-text" style="margin-top:1rem;">
-            <p>Same lavender fields. Same magic. One year apart. The universe is wild. ☺️</p>
-        </div>
-        <div class="message-signature">— Farmer KC 🚜💜</div>
-    `;
-}
-
-function getSnackContent() {
-    return `
-        <h2 class="section-title">You Found My Hiding Spot 🦐</h2>
-        <div class="message-text">
-            <p>Remember our emoji hiding game? You always found everything. Here's a face you've never seen:</p>
-        </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'snack-q')">
-            <img src="photos/shrimp-cracker.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
-            </div>
-        </div>
-        <div id="snack-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What snack am I holding?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Shrimp cracker 🦐</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">NuGo bar 💪</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Pocky 🍫</button>
-            </div>
-        </div>
-        <div class="message-text" style="margin-top:1rem;">
-            <p>This face is what you're gonna see at the airport. 😂</p>
-        </div>
-        <div class="message-signature">— The guy who can't hide anything from you 😤</div>
-    `;
-}
-
-function getAlpacaContent() {
-    return `
-        <h2 class="section-title">The Alpaca Situation 🦙</h2>
-        <div class="message-text">
-            <p>Okay, I admit it. I was maybe... a LITTLE too friendly with the alpacas in Hokkaido.</p>
-            <p>But check what else I was doing there:</p>
-        </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'alpaca-q')">
-            <img src="photos/stonehenge-hokkaido.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
-            </div>
-        </div>
-        <div id="alpaca-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What fake landmark am I leaning on?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Eiffel Tower 🗼</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Stonehenge 🗿</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Statue of Liberty 🗽</button>
-            </div>
-        </div>
-        <div class="photo-collage" style="margin-top:1rem;">
-            <div class="photo-item wide">
-                <img src="photos/alpaca-2.jpg" alt="">
-                <div class="photo-caption">And yes, here's the other alpaca. I promise you're still number one. 🥹</div>
-            </div>
-        </div>
-        <div class="message-signature">— Your alpaca-flirting boy 🦙</div>
-    `;
-}
-
-function getMtFujiContent() {
-    return `
-        <h2 class="section-title">6am Mt. Fuji Energy 🌄</h2>
-        <div class="message-text">
-            <p>Remember our first real-time chat? 3am my time. You kept telling me to sleep. I kept saying NO.</p>
-            <p>Well this is what early morning KC actually looks like:</p>
-        </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'fuji-q')">
-            <img src="photos/mt-fuji-morning.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
-            </div>
-        </div>
-        <div id="fuji-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What's in my mouth in this photo?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Chopsticks 🥢</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Toothbrush 🪥</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Pocky stick 🍫</button>
-            </div>
-        </div>
-        <div class="message-text" style="margin-top:1rem;">
-            <p>This is the energy that stays up until 3am for you. Zero regrets. ☺️</p>
-        </div>
-        <div class="message-signature">— 3am insomniac KC 🌙</div>
-    `;
-}
-
-function getFogContent() {
-    return `
-        <h2 class="section-title">Before Texas. Before You. 🌫️</h2>
-        <div class="message-text">
-            <p>Before we met... before Hinge... I was somewhere far away.</p>
-        </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'fog-q')">
-            <img src="photos/chongqing-fog.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
-            </div>
-        </div>
-        <div id="fog-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What country was I in?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Japan 🇯🇵</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">China 🇨🇳</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Korea 🇰🇷</button>
-            </div>
-        </div>
-        <div class="message-text" style="margin-top:1rem;">
-            <p>Malaysia → Pittsburgh → Chongqing → Texas → You.</p>
-            <p>Every move led closer to June 11th. And June 11th led to us. ☺️</p>
-        </div>
-        <div class="message-signature">— Your wanderer, finally home 🌏❤️</div>
-    `;
-}
-
-function getDramaContent() {
-    return `
-        <h2 class="section-title">Fine. Here's the Smile. 😊</h2>
-        <div class="message-text">
-            <p>You always say you want to see me smile more. Fine. You win:</p>
-        </div>
-        <div class="locked-photo" onclick="unlockPhoto(this, 'smile-q')">
-            <img src="photos/smiling-me.jpg" alt="">
-            <div class="locked-photo-overlay">
-                <span class="lock-emoji">🔒</span>
-                <p>Tap to unlock</p>
-            </div>
-        </div>
-        <div id="smile-q" class="photo-question hidden">
-            <p style="font-weight:700; margin-bottom:0.8rem;">What do you always catch me doing in photos instead of smiling?</p>
-            <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Looking away 😒</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Closing my eyes 😑</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Looking serious 😐</button>
-            </div>
-        </div>
-        <div class="photo-collage" style="margin-top:1rem;">
-            <div class="photo-item wide">
-                <img src="photos/photoshoot-me.jpg" alt="">
-                <div class="photo-caption">Bonus: a photoshoot you didn't know existed. Drama actor material? You tell me 😏</div>
-            </div>
-        </div>
-        <div class="message-signature">— Your drama actor with bad posing skills 🎬❤️</div>
+        <div class="message-signature">, KC 🎬</div>
     `;
 }
 
 // ==========================================
-// IMAGE VIEWER — tap photo to view fullscreen
+// TIMELINE CONTENT
+// ==========================================
+
+function getTimelineContent() {
+    return `
+        <h2 class="section-title">Our Story 📅</h2>
+        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.85rem;">June 11 to August 23. Every moment that led us here.</p>
+        <div class="timeline">
+            <div class="timeline-item"><div class="timeline-date">Jun 11</div><div class="timeline-text">"Hi! It's me. Sunny! 😊" - it all begins</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 12</div><div class="timeline-text">"Drink a good boba tea for me please 🥹"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 13</div><div class="timeline-text">First midnight texts. Neither wants to stop.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 14</div><div class="timeline-text">Pink is her color. Noted forever.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 15</div><div class="timeline-text">She leaves for Japan. Tulips at the grocery store.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 17</div><div class="timeline-text">Blue Pond. Farm Tomita. Paths crossed one year apart.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 18</div><div class="timeline-text">World Cup night. Korea vs Mexico. Somi Somi after.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 21</div><div class="timeline-text">The violin headshot drops. "OHHHH MYYY GOOOSSHHH"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 23</div><div class="timeline-text">First real-time chat. 3am-6am. "Wrong answer!! 😤"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 24</div><div class="timeline-text">Prada Marfa. "Was that suitcase to avoid pockets?"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 25</div><div class="timeline-text">"Why does it feel like I've already known you forever?"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 26</div><div class="timeline-text">Board game night. Codenames champion.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jun 28</div><div class="timeline-text">Hair styling at midnight. "Your hair looks so cool!"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 3</div><div class="timeline-text">First voice messages. "I miss you 🥹"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 5</div><div class="timeline-text">KC sick, eats buldak anyway. "You shouldn't eat ramen when you're sick!!"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 6</div><div class="timeline-text">The suit photo. "WOW 🤩 Damnnn" Hands still in pockets.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 7</div><div class="timeline-text">Mom hid her Alo pants. Mushroom hair confession.</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 10</div><div class="timeline-text">"Why are you hiding these pictures from me!! 😭"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 13</div><div class="timeline-text">She called him 자기야 for the first time</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 18</div><div class="timeline-text">First Korean voice note exchange</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 26</div><div class="timeline-text">Sticker war begins. Bikini sticker incident. "I hate you 😤"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 27</div><div class="timeline-text">"Whats in your porcket?!" - a game is born</div></div>
+            <div class="timeline-item"><div class="timeline-date">Aug 9</div><div class="timeline-text">"We're both just as lucky we crossed paths ❤️"</div></div>
+            <div class="timeline-item"><div class="timeline-date">Aug 23</div><div class="timeline-text">✈️ The countdown hits zero.</div></div>
+        </div>
+        <div class="message-text" style="margin-top:1.5rem;">
+            <p>74 days. Thousands of messages. One timezone away from forever. ☺️</p>
+        </div>
+        <div class="message-signature">- KC 📅</div>
+    `;
+}
+
+// ==========================================
+// STICKERS CONTENT
+// ==========================================
+
+function getStickersContent() {
+    return `
+        <h2 class="section-title">Our Sticker Collection 🎨</h2>
+        <div class="message-text">
+            <p>You turned us into stickers. Some I love. Some I hate. All of them make me smile.</p>
+        </div>
+        <div class="sticker-grid">
+            <div class="sticker-item"><img src="stickers/sticker-apple-me.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-are-you-kidding.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-bikini-hair.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-cute-me.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-her-bikini.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-her-red-dress.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-hungry-feed-me.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-me-no-phone.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-puff-hair.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-send-pictures.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker-silly-chair-pout.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker1.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker2.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/sticker3.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260726-WA0045.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260727-WA0046.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260729-WA0012.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260730-WA0006.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260730-WA0027.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260730-WA0028.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260802-WA0034.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260803-WA0005.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260803-WA0006.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260803-WA0008.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260805-WA0017.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260805-WA0018.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260805-WA0027.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+            <div class="sticker-item"><img src="stickers/STK-20260805-WA0044.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
+        </div>
+        <div class="message-signature">- The guy you keep turning into stickers 😤</div>
+    `;
+}
+
+// ==========================================
+// CROSSWORD CONTENT
+// ==========================================
+
+function getCrosswordContent() {
+    const grid = [
+        // 12 cols x 10 rows
+        // P=pockets, BULDAK, SAPPORO, LAVENDER, PINK, BOBA, VIOLIN, CODENAMES
+        [' ',' ',' ','P',' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ','O',' ','B',' ',' ',' ',' ',' ',' '],
+        [' ','B','U','L','D','A','K',' ',' ',' ',' ',' '],
+        [' ',' ',' ','L',' ','V',' ',' ',' ',' ',' ',' '],
+        ['S','A','P','P','O','R','O',' ',' ',' ',' ',' '],
+        [' ',' ',' ','O',' ','N',' ',' ',' ',' ',' ',' '],
+        [' ',' ','P','I','N','K',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ','N',' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ','V','I','O','L','I','N',' ',' ',' ',' ',' '],
+        ['C','O','D','E','N','A','M','E','S',' ',' ',' '],
+    ];
+
+    const clues = {
+        across: [
+            { num: 3, clue: "The spicy noodles she eats 3x a week (6)", row: 2, col: 1 },
+            { num: 5, clue: "City in Japan where our paths crossed (7)", row: 4, col: 0 },
+            { num: 7, clue: "Her favorite color (4)", row: 6, col: 2 },
+            { num: 9, clue: "Her instrument (6)", row: 8, col: 1 },
+            { num: 10, clue: "The board game KC always wins (9)", row: 9, col: 0 },
+        ],
+        down: [
+            { num: 1, clue: "Where KC's hands always are (7)", row: 0, col: 3 },
+            { num: 2, clue: "The ice cream flavor at Farm Tomita (8)", row: 1, col: 5 },
+        ]
+    };
+
+    let gridHTML = '<div class="crossword-grid">';
+    for (let r = 0; r < grid.length; r++) {
+        for (let c = 0; c < grid[r].length; c++) {
+            const letter = grid[r][c];
+            if (letter === ' ') {
+                gridHTML += '<div class="cw-cell cw-blank"></div>';
+            } else {
+                // Check if this cell starts a word
+                let num = '';
+                for (const cl of [...clues.across, ...clues.down]) {
+                    if (cl.row === r && cl.col === c) num = cl.num;
+                }
+                gridHTML += '<div class="cw-cell cw-active" data-answer="' + letter + '">' +
+                    (num ? '<span class="cw-num">' + num + '</span>' : '') +
+                    '<input type="text" maxlength="1" class="cw-input" autocomplete="off" autocapitalize="characters">' +
+                    '</div>';
+            }
+        }
+    }
+    gridHTML += '</div>';
+
+    let clueHTML = '<div class="cw-clues"><div class="cw-clue-section"><strong>Across</strong>';
+    clues.across.forEach(c => { clueHTML += '<div class="cw-clue">' + c.num + '. ' + c.clue + '</div>'; });
+    clueHTML += '</div><div class="cw-clue-section"><strong>Down</strong>';
+    clues.down.forEach(c => { clueHTML += '<div class="cw-clue">' + c.num + '. ' + c.clue + '</div>'; });
+    clueHTML += '</div></div>';
+
+    return `
+        <h2 class="section-title">Our Crossword ✏️</h2>
+        <p style="text-align:center; color:#8b6b7a; margin-bottom:1rem; font-size:0.85rem;">Fill in the puzzle about us. Tap Check when you're done!</p>
+        ${gridHTML}
+        ${clueHTML}
+        <button class="unlock-btn" style="margin-top:1rem;" onclick="checkCrossword()">Check ✏️</button>
+        <p id="cw-result" style="text-align:center; margin-top:0.8rem; font-weight:700; color:#ff6b9d;"></p>
+    `;
+}
+
+function checkCrossword() {
+    const cells = document.querySelectorAll('.cw-cell.cw-active');
+    let correct = 0;
+    let total = cells.length;
+    cells.forEach(cell => {
+        const input = cell.querySelector('.cw-input');
+        const answer = cell.dataset.answer;
+        if (input.value.toUpperCase() === answer) {
+            cell.style.background = '#e8f5e9';
+            correct++;
+        } else if (input.value) {
+            cell.style.background = '#fff0f0';
+        }
+    });
+    const result = document.getElementById('cw-result');
+    if (correct === total) {
+        result.textContent = "You got them all!! 💗";
+    } else {
+        result.textContent = correct + ' / ' + total + ' correct. Keep trying! 😤';
+    }
+}
+
+// ==========================================
+// VIDEO - pause others when one plays
+// ==========================================
+
+document.addEventListener('play', function(e) {
+    if (e.target.tagName === 'VIDEO') {
+        var videos = document.querySelectorAll('video');
+        videos.forEach(function(v) {
+            if (v !== e.target && !v.paused) v.pause();
+        });
+    }
+}, true);
+
+// ==========================================
+// IMAGE VIEWER , tap photo to view fullscreen
 // ==========================================
 
 document.addEventListener('click', function (e) {
@@ -1937,7 +2790,7 @@ document.addEventListener('click', function (e) {
 });
 
 // ==========================================
-// LOCKED PHOTO — blur until question answered
+// LOCKED PHOTO , blur until question answered
 // ==========================================
 
 function unlockPhoto(photoEl, questionId) {
@@ -1967,7 +2820,7 @@ function checkPhotoAnswer(btn, isCorrect) {
 }
 
 // ==========================================
-// BUCKET LIST — tappable checkboxes
+// BUCKET LIST , tappable checkboxes
 // ==========================================
 
 (function () {
