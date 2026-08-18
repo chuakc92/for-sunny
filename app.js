@@ -356,15 +356,16 @@ function tapSticker(el, type) {
 let musicPlaying = false;
 const bgTracks = ['audio/you-and-me.mp3','audio/second-chance.mp3', 'audio/xiang-jian-ni.mp3'];
 let bgTrackIdx = 0;
+let trackEndHandled = false;
 
 function startMusic() {
     if (musicPlaying) return;
     const audio = document.getElementById('bg-music');
     if (!audio) return;
     audio.volume = 0.4;
-    // Set up track advancement
-    audio.removeEventListener('ended', advanceTrack);
+    audio.loop = false;
     audio.addEventListener('ended', advanceTrack);
+    audio.addEventListener('error', advanceTrack);
     audio.play().then(() => {
         musicPlaying = true;
         document.querySelectorAll('.music-btn').forEach(btn => {
@@ -379,9 +380,14 @@ function startMusic() {
 function advanceTrack() {
     const audio = document.getElementById('bg-music');
     bgTrackIdx = (bgTrackIdx + 1) % bgTracks.length;
+    audio.removeEventListener('ended', advanceTrack);
+    audio.removeEventListener('error', advanceTrack);
     audio.src = bgTracks[bgTrackIdx];
     audio.load();
-    audio.play().catch(() => {});
+    audio.addEventListener('ended', advanceTrack);
+    audio.addEventListener('error', advanceTrack);
+    var p = audio.play();
+    if (p) p.catch(() => {});
 }
 
 function toggleMusic() {
