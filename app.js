@@ -6,7 +6,7 @@
 // COUNTDOWN LOCK , Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_TIMESTAMP = 1787471100000; // Aug 23, 2026 4:45 PM KST (07:45 UTC)
+const UNLOCK_TIMESTAMP = Date.now() + 10000; // LOCAL: 10 sec. PROD: 1787471100000
 
 // Server time offset to prevent phone clock cheating
 let serverTimeOffset = 0;
@@ -588,7 +588,7 @@ const envelopes = [
         title: "You Arrived",
         subtitle: 'Open this when you land ☺️',
         timeLocked: true,
-        unlockTimestamp: 1787605200000, // Aug 23, 2026 4:00 PM CDT (21:00 UTC)
+        unlockTimestamp: 1787518800000, // Aug 23, 2026 4:00 PM CDT (21:00 UTC Aug 23)
         content: 'getArrivedContent'
     },
     {
