@@ -6,7 +6,7 @@
 // COUNTDOWN LOCK , Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_TIMESTAMP = 1787471100000; // Aug 23, 2026 4:45 PM KST (07:45 UTC)
+const UNLOCK_TIMESTAMP = Date.now() + 10000; // LOCAL: 10 sec. PROD: 1787471100000
 
 // Server time offset to prevent phone clock cheating
 let serverTimeOffset = 0;
@@ -150,6 +150,12 @@ function updateCountdownTimer() {
 }
 
 function showPrecache() {
+    // Only precache once, then go straight to landing
+    if (localStorage.getItem('precacheDone')) {
+        document.getElementById('landing').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        return;
+    }
     var overlay = document.getElementById('precache-overlay');
     if (!navigator.onLine) {
         document.getElementById('landing').classList.remove('hidden');

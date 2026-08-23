@@ -230,6 +230,7 @@
         function finish() {
             bar.style.width = '100%';
             count.textContent = 'All saved 💗';
+            localStorage.setItem('precacheDone', 'true');
             cont.style.opacity = '1';
             cont.style.pointerEvents = 'auto';
             tip.style.opacity = '1';
