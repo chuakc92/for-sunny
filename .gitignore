@@ -1,8 +1,3 @@
-# Photos and stickers — too large for git, served separately
-photos/
-stickers/
-audio/
-flight/
 .kiro/
 .vscode/
 *WhatsApp Chat*
