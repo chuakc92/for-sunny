@@ -150,19 +150,8 @@ function updateCountdownTimer() {
 }
 
 function showPrecache() {
-    if (localStorage.getItem('precacheDone')) {
-        document.getElementById('landing').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        return;
-    }
-    var overlay = document.getElementById('precache-overlay');
-    if (!navigator.onLine || !overlay) {
-        document.getElementById('landing').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        return;
-    }
-    overlay.style.display = 'flex';
-    if (window.runPrecache) window.runPrecache();
+    document.getElementById('landing').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 }
 
 function tapLocked() {

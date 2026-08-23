@@ -17,17 +17,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Precache overlay - hidden until timer expires -->
-    <div id="precache-overlay" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#fff0f5 0%,#ffe4ee 100%);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5rem;font-family:'Nunito',sans-serif;color:#8b5a72;">
-        <div style="font-size:3rem;margin-bottom:0.5rem;animation:float 2.5s ease-in-out infinite;">✈️</div>
-        <h1 style="font-family:'Caveat',cursive;font-size:2rem;color:#ff6b9d;margin:0 0 0.4rem;">Getting everything ready<br>for your flight</h1>
-        <p style="font-size:0.95rem;margin:0.2rem 0;max-width:320px;line-height:1.4;">Saving everything so it works even in airplane mode ☺️</p>
-        <p style="font-size:0.8rem;color:#b784a0;">Make sure you're on wifi 💗</p>
-        <div style="width:260px;max-width:80vw;height:12px;background:#ffd3e2;border-radius:99px;overflow:hidden;margin:1.4rem 0 0.6rem;"><div id="pc-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#ff9ec4,#ff6b9d);border-radius:99px;transition:width 0.25s ease;"></div></div>
-        <div id="pc-count" style="font-size:0.8rem;color:#b784a0;">Starting...</div>
-        <button id="pc-continue" style="margin-top:1.6rem;padding:0.9rem 2.4rem;border:none;border-radius:99px;background:linear-gradient(90deg,#ff9ec4,#ff6b9d);color:#fff;font-size:1.05rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.4s ease;box-shadow:0 8px 20px rgba(255,107,157,0.35);">I'm ready ☺️</button>
-        <div id="pc-tip" style="margin-top:1.4rem;font-size:0.72rem;color:#b784a0;max-width:300px;opacity:0;transition:opacity 0.4s ease;">Tap Share → "Add to Home Screen" to keep it saved 💗</div>
-    </div>
+    <!-- Precache overlay - DISABLED -->
+    <div id="precache-overlay" style="display:none;"></div>
 
     <div class="app">
         <!-- Locked Countdown Page (shows before Aug 23) -->
