@@ -3,3 +3,9 @@ photos/
 stickers/
 audio/
 flight/
+.kiro/
+.vscode/
+*WhatsApp Chat*
+*Identifier
+*.sh
+*.bat

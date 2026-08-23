@@ -6,7 +6,7 @@
 // COUNTDOWN LOCK , Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_TIMESTAMP = 1787471100000; // Aug 23, 2026 4:45 PM KST (07:45 UTC) , 1hr before her ~5:45pm KST departure
+const UNLOCK_TIMESTAMP = 1787471100000; // Aug 23, 2026 4:45 PM KST (07:45 UTC)
 
 // Server time offset to prevent phone clock cheating
 let serverTimeOffset = 0;
@@ -97,11 +97,9 @@ const FLOWER_GIFT_URL = 'https://sodagift.com/ko/welcome/gift-links/2229133?t=3k
 let lockedTapCount = 0;
 
 function initCountdown() {
-    // HARD LOCK , always show locked page during development
-    // Change DEV_LOCK to false when ready to use the real timer
-    const DEV_LOCK = true;
+    const DEV_LOCK = false;
 
-    // Flight version always skips the lock (she's already on the plane)
+    // Flight version always skips the lock
     const isFlight = location.pathname.includes('/flight');
     if (isFlight) {
         document.getElementById('locked-page').classList.add('hidden');
@@ -110,23 +108,20 @@ function initCountdown() {
         return;
     }
 
-    // Show locked page immediately , no waiting
+    // Check if already unlocked
+    const now = getTrueNow();
+    if (!DEV_LOCK && now >= UNLOCK_TIMESTAMP) {
+        document.getElementById('locked-page').classList.add('hidden');
+        showPrecache();
+        return;
+    }
+
+    // Show locked page with countdown
     document.getElementById('locked-page').classList.remove('hidden');
     document.getElementById('landing').classList.add('hidden');
     document.body.style.overflow = 'hidden';
     updateCountdownTimer();
-    setInterval(updateCountdownTimer, 1000);
-
-    if (DEV_LOCK) return;
-
-    // When not dev-locked, fetch server time and unlock if past date
-    fetchServerTime().then(() => {
-        const now = getTrueNow();
-        if (now >= UNLOCK_TIMESTAMP) {
-            document.getElementById('locked-page').classList.add('hidden');
-            document.getElementById('landing').classList.remove('hidden');
-        }
-    });
+    window._countdownInterval = setInterval(updateCountdownTimer, 1000);
 }
 
 function updateCountdownTimer() {
@@ -135,6 +130,9 @@ function updateCountdownTimer() {
 
     if (diff <= 0) {
         document.getElementById('countdown-timer').textContent = '0d 0h 0m 0s';
+        if (window._countdownInterval) clearInterval(window._countdownInterval);
+        document.getElementById('locked-page').classList.add('hidden');
+        showPrecache();
         return;
     }
 
@@ -149,6 +147,22 @@ function updateCountdownTimer() {
     } else {
         timerEl.textContent = `${hours}h ${minutes}m ${seconds}s`;
     }
+}
+
+function showPrecache() {
+    var overlay = document.getElementById('precache-overlay');
+    if (!navigator.onLine) {
+        document.getElementById('landing').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        return;
+    }
+    if (!overlay) {
+        document.getElementById('landing').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        return;
+    }
+    overlay.style.display = 'flex';
+    if (window.runPrecache) window.runPrecache();
 }
 
 function tapLocked() {
@@ -461,7 +475,7 @@ const envelopes = [
         id: 'nervous',
         emoji: '🥺',
         title: "You're Nervous About Meeting Me",
-        subtitle: "Read this. I promise it helps.",
+        subtitle: "Don't worry, I'm nervous too.",
         question: "What did KC promise we'd do even if we're too scared for the big rollercoasters?",
         hint: "Something... spinny... and childish 🤭",
         answers: ['kids rides', 'teacups', 'spinning cups'],
@@ -473,7 +487,7 @@ const envelopes = [
         id: 'cant-sleep',
         emoji: '📅',
         title: "You Want to Relive Our Story",
-        subtitle: 'June 11 to August 23, day by day',
+        subtitle: 'June 11 to August 23.',
         question: "What time was it for KC during our first real-time conversation?",
         hint: "KC refused to sleep... you kept telling him to go to bed 😤",
         answers: ['3am', '4am', '3', '4'],
@@ -536,7 +550,7 @@ const envelopes = [
         id: 'young-me',
         emoji: '👶',
         title: "You Want to See Young KC",
-        subtitle: 'Helmet hair era. No refunds.',
+        subtitle: 'Helmet hair era.',
         question: "What did KC's hair look like as a kid?",
         hint: "You've seen the evidence... 😭",
         answers: ['helmet', 'bowl'],
@@ -569,38 +583,22 @@ const envelopes = [
         content: 'getStickersContent'
     },
     {
-        id: 'crossword',
-        emoji: '✏️',
-        title: "You Want a Challenge",
-        subtitle: 'A crossword puzzle about us',
-        question: "What's the name of the boba shop KC always goes to in Austin?",
-        hint: "Chi Cha... something... 🧋",
-        answers: ['chi cha san chen', 'chi cha'],
-        choices: ['HeyTea 🫧', 'Chi Cha San Chen 🧋', 'Tiger Sugar 🐯', 'Gong Cha 🍵'],
-        correctChoice: 1,
-        content: 'getCrosswordContent'
-    },
-    {
-        id: 'landing-tx',
-        emoji: '🤠',
-        title: "You Land in Texas",
-        subtitle: 'Almost the last one... ✨',
-        question: "What did our paths keep doing before we finally met?",
-        hint: "Japan, Austin, Hinge... 🥹",
-        answers: ['crossing', 'crossed', 'cross'],
-        choices: ['Missing each other 😢', 'Crossing ✨', 'Running parallel 🛤️', 'Going in circles 🔄'],
-        correctChoice: 1,
-        isFinal: false,
-        content: 'getLandingContent'
+        id: 'arrived',
+        emoji: '🛬',
+        title: "You Arrived",
+        subtitle: 'Open this when you land ☺️',
+        timeLocked: true,
+        unlockTimestamp: 1787605200000, // Aug 23, 2026 4:00 PM CDT (21:00 UTC)
+        content: 'getArrivedContent'
     },
     {
         id: 'with-me',
         emoji: '💗',
         title: "You're With Me",
-        subtitle: 'Hand me your phone. 🤭',
-        question: "KC will ask you something. Type your answer here ☺️",
+        subtitle: 'KC will ask you something 🤭',
+        question: "Type your answer here ☺️",
         hint: "",
-        answers: ['자기야', 'jagiya', 'jagi', '자기'],
+        answers: ['자기야', 'jagiya'],
         choices: ['오빠 😏', '자기야 💗', '여보 💍', 'KC 😤'],
         correctChoice: 1,
         isFinal: false,
@@ -658,13 +656,29 @@ function renderEnvelopes() {
         }
 
         const isOpened = openedEnvelopes.includes(env.id);
+
+        // Time-locked envelope with countdown on the card
+        let subtitleHTML = env.subtitle;
+        if (env.timeLocked && !isOpened) {
+            const now = getTrueNow();
+            if (now < env.unlockTimestamp) {
+                const diff = env.unlockTimestamp - now;
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                subtitleHTML = '<span class="time-lock-countdown" data-unlock="' + env.unlockTimestamp + '">🔒 ' + h + 'h ' + m + 'm ' + s + 's</span>';
+            } else {
+                subtitleHTML = 'Ready to open ☺️';
+            }
+        }
+
         card.innerHTML = `
             <span class="envelope-emoji">${env.emoji}</span>
             <div class="envelope-info">
                 <div class="envelope-title">Open When ${env.title}</div>
-                <div class="envelope-subtitle">${env.subtitle}</div>
+                <div class="envelope-subtitle">${subtitleHTML}</div>
             </div>
-            <span class="envelope-lock">${isOpened ? '💗' : '🔒'}</span>
+            <span class="envelope-lock">${isOpened ? '💗' : (env.timeLocked && !isOpened ? '⏳' : '🔒')}</span>
         `;
 
         card.addEventListener('click', () => openEnvelope(env.id));
@@ -672,6 +686,27 @@ function renderEnvelopes() {
     });
 
     updateProgress();
+    startTimeLockCountdowns();
+}
+
+function startTimeLockCountdowns() {
+    if (window._timeLockInterval) clearInterval(window._timeLockInterval);
+    window._timeLockInterval = setInterval(() => {
+        const els = document.querySelectorAll('.time-lock-countdown');
+        if (!els.length) { clearInterval(window._timeLockInterval); return; }
+        els.forEach(el => {
+            const unlock = parseInt(el.dataset.unlock);
+            const diff = unlock - getTrueNow();
+            if (diff <= 0) {
+                el.textContent = 'Ready to open ☺️';
+                return;
+            }
+            const h = Math.floor(diff / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            el.textContent = '🔒 ' + h + 'h ' + m + 'm ' + s + 's';
+        });
+    }, 1000);
 }
 
 function updateProgress() {
@@ -708,6 +743,35 @@ function openEnvelope(id) {
         // Already opened, show content directly
         showEnvelopeContent(env);
         return;
+    }
+
+    // Time-locked envelope, no question needed
+    if (env.timeLocked) {
+        const now = getTrueNow();
+        if (now < env.unlockTimestamp) {
+            // Still locked, show countdown
+            const diff = env.unlockTimestamp - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.body.style.overflow = 'hidden';
+            currentEnvelopeId = id;
+            document.getElementById('password-question').textContent = "Not yet, 자기야 ☺️";
+            document.getElementById('password-hint').textContent = "Unlocks in " + hours + "h " + minutes + "m";
+            const grid = document.getElementById('choices-grid');
+            grid.innerHTML = '<p style="text-align:center; color:#8b6b7a; font-size:0.9rem;">This one opens when you land 🛬</p>';
+            document.getElementById('password-error').classList.add('hidden');
+            document.getElementById('password-modal').classList.remove('hidden');
+            return;
+        } else {
+            // Time passed, unlock it
+            if (!openedEnvelopes.includes(id)) {
+                openedEnvelopes.push(id);
+                localStorage.setItem('openedEnvelopes', JSON.stringify(openedEnvelopes));
+            }
+            showEnvelopeContent(env);
+            renderEnvelopes();
+            return;
+        }
     }
 
     // Lock background scroll
@@ -778,7 +842,7 @@ function pickChoice(idx) {
 
     if (idx === env.correctChoice) {
         // Correct! Flash green with a bounce, then open after delay
-        const btns = document.querySelectorAll('.choice-btn');
+        const btns = document.querySelectorAll('#choices-grid .choice-btn');
         btns.forEach(b => b.style.pointerEvents = 'none');
         if (btns[idx]) {
             btns[idx].classList.add('choice-correct');
@@ -803,7 +867,7 @@ function pickChoice(idx) {
         errorEl.style.animation = 'shake 0.4s ease-in-out';
 
         // Mark the wrong button
-        const btns = document.querySelectorAll('.choice-btn');
+        const btns = document.querySelectorAll('#choices-grid .choice-btn');
         if (btns[idx]) {
             btns[idx].classList.add('choice-wrong');
             setTimeout(() => btns[idx].classList.remove('choice-wrong'), 600);
@@ -900,6 +964,38 @@ function getAirportContent() {
     `;
 }
 
+function getArrivedContent() {
+    return `
+        <h2 class="section-title">You Made It 🛬</h2>
+        <div class="message-text">
+            <p>You're here!! You actually made it!! 🥰</p>
+            <p>I don't know if you're reading this still on the flight, in the terminal, in a car, or already somewhere settling in... But wherever you are right now, I just need you to know:</p>
+            <p>we've been thinking about this moment for months! Every single day since June 11th has been leading here... And now that you're on the same ground as me, in the same timezone, breathing the same air... it still doesn't feel real! 🥰</p>
+            <p>But it is!</p>
+            <p>You did it. You survived the flight, the goodbye to your family, and whatever else was hard the past few weeks... And I'm so proud of you ☺️</p>
+            <p>Now, will you come to me?</p>
+        </div>
+
+        <div class="photo-collage">
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/hotel-swexan.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -5%);"></div>
+            <div class="message-text">
+                <p>Hôtel Swexan
+                2575 McKinnon St
+                Dallas, TX 75201</p>
+            </div>
+        </div>
+
+        <div class="photo-collage">
+         <div class="message-text">
+            <p>See you so, so soon</p>
+        </div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/hotel-swexan-pool.jpeg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 5%);"></div>
+        </div>
+
+        <div class="message-signature">, Your KC ☺️</div>
+    `;
+}
+
 function getMissMeContent() {
     return `
         <h2 class="section-title">I Miss You Too 🥹</h2>
@@ -912,7 +1008,7 @@ function getMissMeContent() {
             <div class="chat-bubble me"><span class="bubble-name">KC</span>I'm sure whatever's waiting for you here in Texas is incredibly happy to hear that and is constantly counting down the days ☺️<div class="bubble-time">Jun 23</div></div>
         </div>
         <div class="message-text">
-            <p>I miss you when I walk past flowers at the grocery store. I miss you at the Korean bar watching Korea play. I miss you when I eat my baby buldak alone. I miss you every time I record a voice message and wish I could just say it to your face.</p>
+            <p>I miss you when I walk past flowers at the grocery store. I miss you at the  bar watching Korea play. I miss you when I eat my baby buldak alone. I miss you every time I record a voice message and wish I could just say it to your face.</p>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble me"><span class="bubble-name">KC</span>It feels a little funny to say that I miss talking to you when that was our first genuine conversation in real time, but... I miss talking to you ☺️<div class="bubble-time">Jun 24</div></div>
@@ -950,7 +1046,7 @@ function getQuizContent() {
     quizAnswered = 0;
     return `
         <h2 class="section-title">How Well Do You Know KC? 🎮</h2>
-        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.9rem;">17 questions. No cheating. Let's see what you've got 😤</p>
+        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.9rem;">15 questions. No cheating. Let's see what you've got 😤</p>
         <div class="quiz-container" id="quiz-container">
             ${generateQuizHTML()}
         </div>
@@ -958,6 +1054,7 @@ function getQuizContent() {
             <div class="quiz-score-number" id="quiz-final-score"></div>
             <div class="quiz-score-text" id="quiz-final-text"></div>
         </div>
+        <div class="message-signature">, Your Baby Buldak boy 🔥</div>
     `;
 }
 
@@ -966,7 +1063,7 @@ function generateQuizHTML() {
         {
             q: "What's KC's spice tolerance level?",
             options: [
-                "He eats spicy x2 buldak sauce like a true Korean 🔥",
+                "He eats spicy x2 buldak sauce like a true  🔥",
                 "He eats baby buldak only",
                 "He once cried eating mild salsa",
                 "He's secretly immune to all spice"
@@ -994,12 +1091,12 @@ function generateQuizHTML() {
             correct: 2
         },
         {
-            q: "Why did KC think he was an honorary Korean?",
+            q: "Why did KC think he was an honorary ?",
             options: [
-                "He looks Korean",
+                "He looks ",
                 "Owns more Buldak flavors than Sunny 😤",
-                "Speaks better Korean than Sunny",
-                "Secretly has a Korean passport"
+                "Speaks better  than Sunny",
+                "Secretly has a  passport"
             ],
             correct: 1
         },
@@ -1044,16 +1141,6 @@ function generateQuizHTML() {
             correct: 1
         },
         {
-            q: "How many meals did KC and his friends eat on their Houston food trip?",
-            options: [
-                "3 meals a day like normal people",
-                "5 on day 1, 6 on day 2",
-                "7 on day 1, 8 on day 2",
-                "They lost count"
-            ],
-            correct: 2
-        },
-        {
             q: "What did Sunny wear to church that embarrassed her sister?",
             options: [
                 "Cap + Crocs with Jibbitz 🐊",
@@ -1064,7 +1151,7 @@ function generateQuizHTML() {
             correct: 0
         },
         {
-            q: "What insect did KC say 'actually tasted pretty good'?",
+            q: "What insect did KC say actually tasted pretty good?",
             options: [
                 "Crickets 🦗",
                 "Ants 🐜",
@@ -1104,17 +1191,7 @@ function generateQuizHTML() {
             correct: 1
         },
         {
-            q: "What drink does KC drink when he's sick (Malaysian style)?",
-            options: [
-                "Ginger tea",
-                "100 Plus (isotonic drink)",
-                "Hot lemon water",
-                "Soju (for courage)"
-            ],
-            correct: 1
-        },
-        {
-            q: "What Korean phrase did KC accidentally mess up and say 'garlic' instead?",
+            q: "What  phrase did KC accidentally mess up and say 'garlic' instead?",
             options: [
                 "I like you → garlic",
                 "Goodnight → garlic",
@@ -1165,7 +1242,7 @@ function answerQuiz(questionIdx, selectedIdx, correctIdx) {
     if (selectedIdx === correctIdx) quizScore++;
     quizAnswered++;
 
-    if (quizAnswered === 17) {
+    if (quizAnswered === 15) {
         setTimeout(showQuizScore, 600);
     }
 }
@@ -1175,9 +1252,9 @@ function showQuizScore() {
     const scoreNum = document.getElementById('quiz-final-score');
     const scoreText = document.getElementById('quiz-final-text');
 
-    scoreNum.textContent = `${quizScore} / 17`;
+    scoreNum.textContent = `${quizScore} / 15`;
 
-    if (quizScore === 17) {
+    if (quizScore === 15) {
         scoreText.textContent = "You know me better than I know myself. Come here already 😭";
     } else if (quizScore >= 12) {
         scoreText.textContent = "Okay you've been paying attention... I see you 🤭";
@@ -1213,8 +1290,8 @@ function getBucketListContent() {
                 <div class="bucket-item">Spice challenge , your buldak vs my Indian food</div>
                 <div class="bucket-item">Franklin BBQs</div>
                 <div class="bucket-item">Terry Black</div>
-                <div class="bucket-item">Korean BBQ where YOU cook</div>
-                <div class="bucket-item">Late night Korean food run</div>
+                <div class="bucket-item">BBQ where YOU cook</div>
+                <div class="bucket-item">Late night  food run</div>
                 <div class="bucket-item">HeyTea date</div>
             </div>
             <div class="bucket-category">
@@ -1238,7 +1315,7 @@ function getBucketListContent() {
                 <div class="bucket-item">Dye hair together , me white, you blonde</div>
                 <div class="bucket-item">Make slime/squishies together</div>
                 <div class="bucket-item">Picnic with homemade gimbap and hwachae + your favorite flowers</div>
-                <div class="bucket-item">Korean spa day</div>
+                <div class="bucket-item"> spa day</div>
                 <div class="bucket-item">Apartment hunting date</div>
                 <div class="bucket-item">Beach trip</div>
                 <div class="bucket-item">PC bang / gaming date , watch you play League</div>
@@ -1279,7 +1356,7 @@ function getBucketListContent() {
         <div class="message-text" style="margin-top:1.5rem;">
             <p>Every one of these has your name written on it. Let's start checking them off. ☺️</p>
         </div>
-        <div class="message-signature">, KC 🗒️✨</div>
+        <div class="message-signature">, Your Apple 🍎</div>
     `;
 }
 
@@ -1287,7 +1364,7 @@ function getNervousContent() {
     return `
         <h2 class="section-title">Hey. I Know. Me Too. 🥺</h2>
         <div class="message-text">
-            <p>Hey. I know what you're feeling right now, because I'm feeling the exact same thing.</p>
+            <p>Hey, I know what you're feeling right now, because I'm feeling the exact same thing.</p>
             <p>What if it's awkward? What if we run out of things to say? What if it doesn't feel the same in person?</p>
         </div>
         <div class="chat-bubbles">
@@ -1295,7 +1372,7 @@ function getNervousContent() {
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Don't be nervous! I only dress up when I'm taking pictures. Most of the time I'm just wearing whatever is comfortable. 😌<div class="bubble-time">Jun 19</div></div>
         </div>
         <div class="message-text">
-            <p>I've thought about all of that too. And here's what I keep coming back to: We talked until 3am the very first time we were online together. We never ran out of things to say across a 14-hour time difference.</p>
+            <p>I've thought about all of that too. And here's what I keep coming back to: We talked until 3am the very first time we were online together in real time. We never ran out of things to say across a 14 hour time difference and across an entire ocean! ☺️</p>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I think this might be the first time we've actually been online and talking at the same time!<div class="bubble-time">Jun 23</div></div>
@@ -1304,22 +1381,22 @@ function getNervousContent() {
         </div>
         <div class="message-text">
             <p>If we could do all of that without ever being in the same room... imagine what it'll be like when we finally are.</p>
-            <p>But also - if it IS a little awkward at first? That's okay. That's normal. We don't have to be perfect. We just have to be us.</p>
+            <p>But also, if it IS a little awkward at first? That's okay. That's normal. We don't have to be perfect. We just have to be us ☺️</p>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble me"><span class="bubble-name">KC</span>I'm scared of heights, but maybe if we could hold hands through the most of it I'd be down to try<div class="bubble-time">Jun 24</div></div>
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>I think I'd be scared 😭😭 but maybe I'd be brave enough to try it if I had the right person with me<div class="bubble-time">Jun 24</div></div>
         </div>
         <div class="message-text">
-            <p>I'm not expecting you to be the violin headshot version of yourself. I'm excited to meet the jet-lagged, ramen-eating, Crocs-wearing you. The real one.</p>
-            <p>And I'll be honest - I'm going to be nervous too. My hands will be in my pockets. I might talk too fast.</p>
+            <p>I'm not expecting you to be the violin headshot version of yourself. I'm excited to meet the jet-lagged, ramen-eating, Crocs-wearing you. The real you ☺️</p>
+            <p>And I'll be honest, I'm going to be nervous too... My hands will be in my pockets... I might talk too fast...</p>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Honestly, I was too busy looking at your face to notice where your hands were. 😂<div class="bubble-time">Jun 23</div></div>
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>And honestly, I already feel really comfortable with you. I just wish we weren't so far apart right now. 🥺<div class="bubble-time">Jun 13</div></div>
         </div>
         <div class="message-text">
-            <p>So take a breath. We've got this. Together. ☺️</p>
+            <p>So take a breath, we've got this... this time, together. ☺️</p>
         </div>
         <div class="message-signature">- Your golden retriever, KC 🐕</div>
     `;
@@ -1339,7 +1416,7 @@ function getMemoriesContent() {
             </div>
             <div class="timeline-item">
                 <div class="timeline-date">June 11, 7:04 AM</div>
-                <div class="timeline-text">My terrible attempt at Korean to impress you.</div>
+                <div class="timeline-text">My terrible attempt at  to impress you.</div>
                 <div class="chat-bubbles">
                     <div class="chat-bubble me"><span class="bubble-name">KC</span>안녕하세요!!!! 🙂<div class="bubble-time">7:04 AM</div></div>
                     <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>How can u speak korean?!<div class="bubble-time">7:10 AM</div></div>
@@ -1388,7 +1465,7 @@ function getMemoriesContent() {
                 <div class="timeline-date">June 18</div>
                 <div class="timeline-text">World Cup heartbreak 🥹 Korea loses to Mexico. Dessert heals all wounds.</div>
                 <div class="chat-bubbles">
-                    <div class="chat-bubble me"><span class="bubble-name">KC</span>UMM HELLO?! Our team ☺️ Honorary Korean remember?!<div class="bubble-time">10:04 PM</div></div>
+                    <div class="chat-bubble me"><span class="bubble-name">KC</span>UMM HELLO?! Our team ☺️ Honorary  remember?!<div class="bubble-time">10:04 PM</div></div>
                 </div>
             </div>
             <div class="timeline-item">
@@ -1496,7 +1573,7 @@ function getMemoriesContent() {
             </div>
             <div class="timeline-item">
                 <div class="timeline-date">July 26</div>
-                <div class="timeline-text">Voice messages in Chinese and Korean. Your voice drives me crazy 🥰</div>
+                <div class="timeline-text">Voice messages in Chinese and . Your voice drives me crazy 🥰</div>
                 <div class="chat-bubbles">
                     <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Hehe i like you more<div class="bubble-time">4:16 PM</div></div>
                     <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>OMGGGGGGGGGGG How can your voice be so sweet 😭<div class="bubble-time">4:29 PM</div></div>
@@ -1523,102 +1600,77 @@ function getVoiceContent() {
     return `
         <h2 class="section-title">Close Your Eyes, Press Play 🎧</h2>
         <div class="message-text">
-            <p>All our voice notes in one place. Some are mine, some are yours. Close your eyes and pretend we're next to each other. ☺️</p>
+            <p>All our voice notes in one place. Some mine, some yours... Close your eyes and pretend we're next to each other ☺️</p>
         </div>
         <p style="text-align:center; color:#ff6b9d; font-weight:700; margin:1rem 0 0.5rem;">KC's voice 🎙️</p>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-babe-miss-you-chinese.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">寶貝,我好想你</div><div class="audio-subtitle">Baby, I miss you so much (Chinese)</div></div>
+            <div class="audio-info"><div class="audio-title">寶貝,我好想你</div><div class="audio-subtitle">Baby, I miss you so much</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-miss-you-chinese.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">我好想你</div><div class="audio-subtitle">I miss you so much (Chinese)</div></div>
+            <div class="audio-info"><div class="audio-title">我好想你</div><div class="audio-subtitle">I miss you so much (But cuter)</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-miss-you-korean-solo.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">보고 싶어</div><div class="audio-subtitle">I miss you (Korean)</div></div>
+            <div class="audio-info"><div class="audio-title">보고 싶어</div><div class="audio-subtitle">I miss you</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-youre-cute-mix.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기야, you're so cute</div><div class="audio-subtitle">English + Korean mix</div></div>
+            <div class="audio-info"><div class="audio-title">자기야, you're so cute</div><div class="audio-subtitle"></div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-i-really-like-you.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">I really like you, by the way</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-info"><div class="audio-title">I really like you, by the way</div><div class="audio-subtitle"></div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-youre-cute-chinese.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">寶貝,你太可愛了</div><div class="audio-subtitle">Baby, you're so cute (Chinese)</div></div>
+            <div class="audio-info"><div class="audio-title">寶貝,你太可愛了</div><div class="audio-subtitle">Baby, you're so cute</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-all-i-want-is-you-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">내가 원하는 건 너 하나 밖에 없어</div><div class="audio-subtitle">All I want is only you (Korean)</div></div>
+            <div class="audio-info"><div class="audio-title">내가 원하는 건 너 하나 밖에 없어</div><div class="audio-subtitle">All I want is you </div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-want-to-be-with-you-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">너랑 같이 있고 싶어</div><div class="audio-subtitle">I want to be with you (Korean)</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-heart-only-for-you.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기야, my heart is only for you</div><div class="audio-subtitle">Korean + English mix</div></div>
+            <div class="audio-info"><div class="audio-title">너랑 같이 있고 싶어</div><div class="audio-subtitle">I want to be with you </div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-think-of-me-tonight-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">오늘 밤에 내 생각하면서 잘 거야?</div><div class="audio-subtitle">Will you think of me tonight? (Korean)</div></div>
+            <div class="audio-info"><div class="audio-title">우리 자기 오늘 밤에 내 생각하면서 기분 좋게 찾고야</div><div class="audio-subtitle">Will you think of me tonight? </div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-thinking-of-you-miss-you-mix.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">네 생각 하고 있어, I miss you</div><div class="audio-subtitle">Thinking of you (Korean/English)</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-you-are-most-beautiful.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">In the world, you are the most beautiful</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-info"><div class="audio-title">네 생각 하고 있어, I miss you</div><div class="audio-subtitle">Thinking of you </div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-how-cheer-you-up-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">어떻게 하면 기분 풀어줄 수 있어?</div><div class="audio-subtitle">How can I cheer you up? (Korean)</div></div>
+            <div class="audio-info"><div class="audio-title">어떻게 하면 기분 풀어줄 수 있어?</div><div class="audio-subtitle">My darling is in a bad mood, how can I cheer you up? </div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-want-see-pretty-face-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기 예쁜 얼굴 보고 싶어</div><div class="audio-subtitle">I want to see your pretty face (Korean)</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-good-morning-eat-salad.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">Good morning! Don't forget to eat salad today!</div><div class="audio-subtitle">English</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-sleep-well-good-dream.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">Sleep well, have a good dream</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-info"><div class="audio-title">자기야 나도 자기 예쁨 오고 보고 싶어</div><div class="audio-subtitle">I want to see you too</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-goodnight-miss-you-mix.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기야, goodnight, I'll miss you</div><div class="audio-subtitle">Korean/English mix</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-miss-you-so-much-english.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">I miss you so much</div><div class="audio-subtitle">English</div></div>
+            <div class="audio-info"><div class="audio-title">Goodnight, I'll miss you</div><div class="audio-subtitle"></div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-i-dont-like-you-teasing.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기야, 나 안 좋아해</div><div class="audio-subtitle">Babe, I don't like you (teasing 😤)</div></div>
+            <div class="audio-info"><div class="audio-title">자기야 내가 너무 좋아해</div><div class="audio-subtitle">Babe, I like you so much</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
@@ -1626,20 +1678,73 @@ function getVoiceContent() {
             <div class="audio-info"><div class="audio-title">蔡光成</div><div class="audio-subtitle">KC saying his Chinese name</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-babe-youre-cute-korean.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야, 보고 싶어</div><div class="audio-subtitle">Babe, I miss you </div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-are-you-miss-me.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">보고 싶어 내 꿈 꿨어</div><div class="audio-subtitle">I miss you, did you dream of me?</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-your-voice-sexy.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">자기야 목소리 진짜 섹시하다</div><div class="audio-subtitle">Baby, your voice is so sexy</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/i-miss-you-long-1.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I miss you..</div><div class="audio-subtitle">My longest message ever!</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/im-a-garlic-fail.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I'm a garlic</div><div class="audio-subtitle">Hardest message ever!</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/you-are-so-beautiful.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I'm a garlic</div><div class="audio-subtitle">Hardest message ever!</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>        
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-curious-to-see-your-room.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I'm curious to see you room</div><div class="audio-subtitle">Can't you just show it to me?</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>        
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/see-how-pretty.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I'm curious to see you room</div><div class="audio-subtitle">자기야 나도 자기 예쁨 보고 보고 싶어</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+
+
         <p style="text-align:center; color:#ff6b9d; font-weight:700; margin:1.5rem 0 0.5rem;">Sunny's voice ☀️</p>
+        
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/how-many-girls-oppa.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">How many girls have called you oppa?</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>        
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/kc-good-morning-eat-salad.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">Good morning! Don't forget to eat salad today!</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-goodnight-so-happy.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">Good night. Thank you for making me so happy today.</div><div class="audio-subtitle">Her voice + 잘 자</div></div>
+            <div class="audio-info"><div class="audio-title">Good night, thank you for making me so happy today</div><div class="audio-subtitle"></div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-miss-you-waiting-picture.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">I miss you so much because I've been waiting for your picture</div><div class="audio-subtitle">Her voice</div></div>
+            <div class="audio-info"><div class="audio-title">I miss you so much because I've been waiting for your picture</div><div class="audio-subtitle"></div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-i-like-you-even-more.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">I like you even more</div><div class="audio-subtitle">Her voice</div></div>
+            <div class="audio-info"><div class="audio-title">I like you even more</div><div class="audio-subtitle"></div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
@@ -1648,39 +1753,46 @@ function getVoiceContent() {
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
         <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-correcting-garlic.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">The garlic incident 🧄</div><div class="audio-subtitle">Her correcting KC's pronunciation</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-babe-im-shy-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기야 부끄러워</div><div class="audio-subtitle">Babe, I'm shy (Korean)</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-babe-youre-cute-korean.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">자기야 너무 귀여워</div><div class="audio-subtitle">Babe, you're so cute (Korean)</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-are-you-miss-me.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">Are you miss me?</div><div class="audio-subtitle">Her cute broken English</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-your-voice-sexy.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">Baby, your voice is really sexy</div><div class="audio-subtitle">Her voice</div></div>
-            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-        </div>
-        <div class="audio-player">
             <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-your-voice-comparison.opus')">▶</button>
-            <div class="audio-info"><div class="audio-title">Your Chinese is deeper, English is sexier, Korean is cute</div><div class="audio-subtitle">Her ranking KC's voices</div></div>
+            <div class="audio-info"><div class="audio-title">Your Chinese is deeper, English is sexier,  is cute</div><div class="audio-subtitle">Her ranking KC's voices</div></div>
             <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/im-a-garlic-fail.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I can't wait to meet you</div><div class="audio-subtitle">My favorite message!!</div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/im-a-garlic-fail.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">My cute pictures</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-what-are-you-gonna-do.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">What are you gonna do next Sunday?!</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her-you-did-something-special.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">You did something special while I was sleeping</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/no-im-not-gonna-say-this-to-you.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">NO! I'm not going to say this to you</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+        <div class="audio-player">
+            <button class="audio-play-btn" onclick="playAudio(this, 'audio/i-cant-wait-to-see-you.opus')">▶</button>
+            <div class="audio-info"><div class="audio-title">I can't wait to see you</div><div class="audio-subtitle"></div></div>
+            <div class="audio-waves"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+
+
         <div class="message-text" style="margin-top:1.5rem;">
             <p>Your voice does the same thing to me. Every single one. On loop. ☺️</p>
         </div>
-        <div class="message-signature">- KC 🎙️</div>
+        <div class="message-signature">- You honorary Korean </div>
     `;
 }
 
@@ -1689,428 +1801,159 @@ function getPhotosContent() {
         <h2 class="section-title">Our Photo Diary 📸</h2>
         <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.85rem;">Every picture tells our story. Here are the ones that made my heart race.</p>
         <div class="photo-collage">
-            <div class="photo-item">
-                <img src="photos/violin-headshot.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/violin-professional.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/violin-her.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/practice-room.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/recital-after.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/spain-mallorca.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/mallorca-red-dress.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/ballet.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/ice-skating.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/skating-her.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/beach-her.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/beach-her-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/france-selfie.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/library-pink-skirt.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bunny-costume.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/earrings-pretty.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/her-with-friend.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/photobooth.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/changing-room.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/zara-fitting.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/church-no-crocs.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/her-crocs.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bikini-sticker.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/first-flowers.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/first-flowers-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/austin-begging-sticker.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/good-morning-spam.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/cat.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/tulips.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/smiling-me-fav.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/smiling-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/celebrity-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/photoshoot-short-hair.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/hokkaido-fav.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/hokkaido-golden-hour.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/hokkaido-touching-sun.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/hokkaido-failed-sun.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/japan-flowers.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/japan-flowers-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/japan-front-of-garden.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/kamui-rock.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/alpaca-flirt.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/alpaca-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/chongqing-valley.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/chongqing-fog.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/houston-friends.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/houston-cool.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/prada-marfa.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/prada-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/singapore-hair.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/silly-chair-sticker.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/onion-apple-sticker.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/cute-sticker.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/soft-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/car-selfie-nervous.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/car-white-hat.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/pimple-patch.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/grandpa-emulate.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/gym-selfie.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/gym.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/too-thin-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/big-bend-1.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/big-bend-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/new-york-friends.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/new-york-solo.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/portland-friends.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/pre-portland-crew.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/sapporo-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/mt-fuji-morning.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/stone-hedge-pose.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/shrimp-cracker.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/neverseen-farm-tomita-road.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/neverseen-hakodate-road.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/neverseen-photoshoot.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/neverseen-wedding-suit.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/kc-cowboy.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/posing-1.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/old-school.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/funny-shirt.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/petting-dog.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/my-seung-cup.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/misidentified.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/suit.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/jollibee.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/drunk-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/drunk-me-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/drunk-me-3.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/pimple-patch (2).jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/apple (2).jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260615-WA0005.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260615-WA0009.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260622-WA0000.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260628-WA0015.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260710-WA0008.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260719-WA0026.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260722-WA0051.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260722-WA0058.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260723-WA0002.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260724-WA0017.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260724-WA0020.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260724-WA0021.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260727-WA0016.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260727-WA0029.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/IMG-20260806-WA0009.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/violin-headshot.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/violin-professional.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/violin-her.jpg" alt="" style="object-position:50% 50%; transform:scale(0.97) translate(0%, -15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/practice-room.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/recital-after.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -30%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/mallorca-red-dress.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -30%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/ballet.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/ice-skating.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -18%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/skating-her.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -23%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/beach-her.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/beach-her-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -25%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/france-selfie.jpg" alt="" style="object-position:50% 50%; transform:scale(1.3) translate(0%, 13%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/library-pink-skirt.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bunny-costume.jpg" alt="" style="object-position:50% 50%; transform:scale(0.98) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/earrings-pretty.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/her-with-friend.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photobooth.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/changing-room.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/zara-fitting.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/church-no-crocs.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/her-crocs.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bikini-sticker.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/first-flowers.jpg" alt="" style="object-position:50% 50%; transform:scale(0.97) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/first-flowers-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/austin-begging-sticker.jpg" alt="" style="object-position:50% 50%; transform:scale(0.9) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/good-morning-spam.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/cat.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/smiling-me-fav.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-smiling-q')"><img src="photos/smiling-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/celebrity-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photoshoot-short-hair.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/hokkaido-fav.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/hokkaido-golden-hour.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/japan-flowers.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/japan-flowers-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -40%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/alpaca-flirt.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/alpaca-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/chongqing-valley.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/chongqing-fog.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/houston-friends.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/houston-cool.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/prada-marfa.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/singapore-hair.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/silly-chair-sticker.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -30%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/onion-apple-sticker.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/cute-sticker.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/soft-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/car-selfie-nervous.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/car-white-hat.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/pimple-patch.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/grandpa-emulate.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/gym-selfie.jpg" alt="" style="object-position:50% 50%; transform:scale(0.9) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/gym.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/too-thin-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-farm-tomita-q')"><img src="photos/neverseen-farm-tomita-road.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/big-bend-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/new-york-friends.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/new-york-solo.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -30%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/pre-portland-crew.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-sapporo-q')"><img src="photos/sapporo-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-fuji-q')"><img src="photos/mt-fuji-morning.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/stone-hedge-pose.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -40%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/shrimp-cracker.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-hakodate-q')"><img src="photos/neverseen-hakodate-road.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -35%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/kc-cowboy.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/posing-1.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -25%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/funny-shirt.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/petting-dog.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-wedding-q')"><img src="photos/neverseen-wedding-suit.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/my-seung-cup.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/misidentified.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/suit.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/jollibee.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 14%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/drunk-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 17%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/drunk-me-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 17%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/drunk-me-3.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-photoshoot-q')"><img src="photos/neverseen-photoshoot.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/pimple-patch (2).jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -23%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/apple (2).jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260615-WA0005.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260615-WA0009.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -23%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260622-WA0000.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260628-WA0015.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260710-WA0008.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260722-WA0051.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260722-WA0058.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260723-WA0002.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260724-WA0017.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260724-WA0021.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260727-WA0016.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260727-WA0029.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260806-WA0009.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
         </div>
+        <div id="neverseen-farm-tomita-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What flavor ice cream did KC eat at Farm Tomita?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Strawberry</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Lavender</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Vanilla</button>
+            </div>
+        </div></div>
+        <div id="neverseen-hakodate-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">Who did KC travel with to Japan?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Traveled Alone</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">전 여자친구</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">His family</button>
+            </div>
+        </div></div>
+        <div id="neverseen-photoshoot-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What did KC bring as a prop for his photoshoot?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Flowers</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">A suitcase</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A guitar</button>
+            </div>
+        </div></div>
+        <div id="neverseen-wedding-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What country was the picture of KC in a suit taken?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Singapore</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Malaysia</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">China</button>
+            </div>
+        </div></div>
+        <div id="neverseen-fuji-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">What famous mountain did KC and his family visit in Japan?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Mt. Ebisu</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Mt. Dew</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Mt. Fuji</button>
+            </div>
+        </div></div>
+        <div id="neverseen-sapporo-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">Which city in China did KC travel to This Summer?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Beijing</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Chongqing</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Shanghai</button>
+            </div>
+        </div></div>
+        <div id="neverseen-smiling-q" class="photo-question hidden"><div class="photo-question-inner">
+            <p style="font-weight:700; margin-bottom:0.8rem;">Which city did KC say he went with his friends for photoshoots?</p>
+            <div class="choices-grid">
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">Dallas</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">Houston</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">San Antonio</button>
+            </div>
+        </div></div>
         <div class="message-text" style="margin-top:1.5rem;">
             <p>Every single photo you sent me is saved. Every video replayed dozens of times. Every sticker screenshot'd and smiled at.</p>
             <p>I can't wait to fill our camera rolls with photos of us together. Starting very, very soon. ☺️</p>
         </div>
-        <div class="message-signature">, KC 📷</div>
     `;
 }
 
@@ -2125,11 +1968,11 @@ function getLandingContent() {
             <p>You made it. We made it. ☀️</p>
             <p>I'm probably pacing around right now, fixing my hair for the 47th time, with my hands in my pockets because I still don't know what to do with them. But the second I see you, I know exactly what I'm going to do with them.</p>
             <p>Thank you for being patient. Thank you for being you. Thank you for every message, every voice note, every sticker, every picture, and every moment that made this distance feel a little shorter.</p>
-            <p>Thank you for matching my energy, for texting me back even at 4am with jet lag, for teaching me Korean, for trusting me with your stories and your pictures, and for giving this random guy from Hinge a real chance.</p>
+            <p>Thank you for matching my energy, for texting me back even at 4am with jet lag, for teaching me , for trusting me with your stories and your pictures, and for giving this random guy from Hinge a real chance.</p>
             <p>I told you once that you're entirely worth the wait. I meant every word.</p>
             <p>Now let's go start our list. ☺️</p>
         </div>
-        <div class="message-signature">, Your honorary Korean 🇰🇷<br>original buldak level: kids' edition<br>hands-in-pockets champion<br>golden retriever<br>자기야's KC ❤️</div>
+    
         <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff0f5,#ffeef8); border-radius:16px;">
             <div style="font-family:'Caveat',cursive; font-size:1.5rem; color:#ff6b9d;">To be continued... in person ☺️</div>
         </div>
@@ -2141,31 +1984,16 @@ function getWithMeContent() {
         <h2 class="section-title">이제 시작이야 💗</h2>
         <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.3rem; color:#8b6b7a; margin-bottom:1.5rem;">This is just the beginning.</p>
         <div class="message-text">
-            <p>We're here.</p>
-            <p>Not 14 hours apart. Not behind a screen. Not a voice message replayed at 4am. Not a countdown on a phone.</p>
-            <p>Us. Right here. Together.</p>
-            <p>Everything since June 11th led to this. Every text, every voice note, every late night where neither of us wanted to say goodnight, every sticker war, every "go to sleep!" that got ignored... it was all building to this exact moment.</p>
-            <p>72 days. Thousands of messages. One timezone. And now... zero distance.</p>
-        </div>
-        <div class="audio-player">
-            <button class="audio-play-btn" onclick="playAudio(this, 'audio/her practicing my name.opus')">▶</button>
-            <div class="audio-info">
-                <div class="audio-title">For us, right now ☺️</div>
-                <div class="audio-subtitle">Press play together.</div>
-            </div>
-            <div class="audio-waves">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-            </div>
-        </div>
-        <div class="message-text">
-            <p>Our paths crossed in Sapporo without us knowing. They crossed again in Austin. And now they don't have to cross anymore... because they finally merged.</p>
-            <p>이제 시작이야. This is just the beginning. And there's nobody else in the world I'd rather start it with. ☺️</p>
-        </div>
-        <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff0f5,#ffeef8); border-radius:16px;">
-            <div style="font-family:'Caveat',cursive; font-size:1.2rem; color:#ff6b9d; margin-bottom:0.5rem;">Our first ✓</div>
-            <div style="font-size:1rem; color:#4a3040; text-decoration:line-through; opacity:0.7;">☐ Our first hug</div>
-            <div style="font-size:1rem; color:#4a3040; font-weight:700; margin-top:0.25rem;">☑️ Done. Finally. ☺️</div>
+            <p>Have you ever wondered why I made this website for us? ☺️</p>
+
+            <p>You once told me your best friend wrote you a bunch of letters, one for when you arrived, one for when you were sad, one for when you were happy. You said it meant so much to you. I remember reading that and thinking... I want to be that person for you too!</p>
+
+            <p>I'm not sure if you remember, I once told you too that the most meaningful gift I've ever gotten was also a handwritten note 😌 it became the one I never stopped thinking about. And now here I am, writing one of my own to the person who made me understand exactly why it mattered so much 🤭</p>
+
+            <p>I hope you enjoyed all the 15 "letters" 💌 you got to open in our website! ☺️</p>
+
+            <p>But as promised... not all of them are digital... 🤭 the first of many to come!</p>
+
         </div>
         <div class="message-signature">, Us. Finally here. ❤️</div>
     `;
@@ -2224,14 +2052,8 @@ function getBathroomContent() {
             <p>It all started when I hid my bathroom stuff behind emojis. Then you asked the question that started it all...</p>
         </div>
         <div class="photo-collage">
-        <div class="photo-item">
-            <img src="photos/bathroom-selfies/hiding-early.jpg" alt="">
-            <div class="photo-caption"><!-- CAPTION --></div>
-        </div>
-        <div class="photo-item">
-            <img src="photos/bathroom-selfies/hiding-game-og.jpg" alt="">
-            <div class="photo-caption"><!-- CAPTION --></div>
-        </div>
+        <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-early.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+        <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-game-og.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Whats in your porcket?!<div class="bubble-time">Jul 27</div></div>
@@ -2239,14 +2061,8 @@ function getBathroomContent() {
             <div class="chat-bubble me"><span class="bubble-name">KC</span>I need more stickers in my picture next time hahaha<div class="bubble-time">Jul 27</div></div>
         </div>
         <div class="photo-collage">
-        <div class="photo-item">
-            <img src="photos/bathroom-selfies/hiding-mentos.jpg" alt="">
-            <div class="photo-caption"><!-- CAPTION --></div>
-        </div>
-        <div class="photo-item">
-            <img src="photos/bathroom-selfies/hiding-pocket.jpg" alt="">
-            <div class="photo-caption"><!-- CAPTION --></div>
-        </div>
+        <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-mentos.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+        <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-pocket.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble me"><span class="bubble-name">KC</span>What's in your pocket?!<div class="bubble-time">Jul 28</div></div>
@@ -2257,22 +2073,10 @@ function getBathroomContent() {
             <p>But you knew well enough that I could never hide things from you... </p>
         </div>
         <div class="photo-collage">
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/hiding-snacks-ac.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/hiding-ginger-ale.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/hiding-1a.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/hiding-1b.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-snacks-ac.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-ginger-ale.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-1a.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/hiding-1b.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
         </div>
         <div class="message-text">
             <p>You've always been quite an analyzer... I love that whenever I sent you pictures.. I could always expect you to disappear for 10 minutes 🤣</p>
@@ -2282,46 +2086,16 @@ function getBathroomContent() {
             <div class="chat-bubble me"><span class="bubble-name">KC</span>I'm sooooo maaadd hahahaha i forgot about the hands in the pocket 😭😭😭<div class="bubble-time">Jun 28</div></div>
         </div>
         <div class="photo-collage">
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/bathroom.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/corgi-shirt.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/work-cap-lazy.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/banana-republic-jacket.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/sticker-no-phone.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/IMG-20260718-WA0016.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/IMG-20260721-WA0009.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/IMG-20260727-WA0022.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/IMG-20260803-WA0012.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/bathroom-selfies/IMG-20260810-WA0006.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/bathroom.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/corgi-shirt.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/work-cap-lazy.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/banana-republic-jacket.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/sticker-no-phone.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260718-WA0016.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260721-WA0009.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260727-WA0022.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260803-WA0012.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260810-WA0006.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
         </div>
         <div class="message-text">
             <p>But these became one of my favorite past times... to purposely hide things around the area or in my pockets for you to spot! Can you still spot all of them without me pointing them out? 🤣</p>
@@ -2342,27 +2116,23 @@ function getCrossedPathsContent() {
             <div class="chat-bubble me"><span class="bubble-name">KC</span>Hahaha OMG yes i think so?!?! You must've been to the farm tomita?!?! The lavender/melon ice cream?<div class="bubble-time">Jun 17</div></div>
         </div>
         <div class="photo-collage">
-            <div class="photo-item">
-                <img src="photos/when-we-crossed-paths/blue-pond-her.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/when-we-crossed-paths/blue-pond-her.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;">
                 <div class="locked-photo" onclick="unlockPhoto(this, 'bluepond-cross-q')">
-                    <img src="photos/when-we-crossed-paths/blue-pond-me-neverseen.jpg" alt="">
+                    <img src="photos/when-we-crossed-paths/blue-pond-me-neverseen.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -25%);">
                     <div class="locked-photo-overlay">
                         <span class="lock-emoji">🔒</span>
                         <p>Tap to unlock</p>
                     </div>
                 </div>
-                <div class="photo-caption"><!-- CAPTION --></div>
             </div>
         </div>
         <div id="bluepond-cross-q" class="photo-question hidden"><div class="photo-question-inner">
-            <p style="font-weight:700; margin-bottom:0.8rem;">How many months apart were we at the Blue Pond?</p>
+            <p style="font-weight:700; margin-bottom:0.8rem;">What animal was KC caught flirting with in Japan?</p>
             <div class="choices-grid">
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">6 months</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">12 months</button>
-                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">3 months</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A cat</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, true)">An alpaca</button>
+                <button class="choice-btn" onclick="checkPhotoAnswer(this, false)">A dog</button>
             </div>
         </div></div>
         <div class="chat-bubbles">
@@ -2371,22 +2141,10 @@ function getCrossedPathsContent() {
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>Yes, exactly! Farm Tomita! I couldn't remember the name, so in my head it was just "the lavender field." 😭<div class="bubble-time">Jun 17</div></div>
         </div>
         <div class="photo-collage">
-            <div class="photo-item">
-                <img src="photos/when-we-crossed-paths/farm-tomita-sign.jpg?v=2" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/when-we-crossed-paths/farm-tomita-icecream-her.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/when-we-crossed-paths/farm-tomita-icecream-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="photo-item">
-                <img src="photos/when-we-crossed-paths/farm-tomita-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/when-we-crossed-paths/farm-tomita-sign.jpg?v=2" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/when-we-crossed-paths/farm-tomita-icecream-her.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/when-we-crossed-paths/farm-tomita-icecream-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/when-we-crossed-paths/farm-tomita-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -35%);"></div>
         </div>
         <div class="chat-bubbles">
             <div class="chat-bubble her"><span class="bubble-name">Sunny ☀️</span>And honestly, I was really happy to find out we'd visited the same places. It felt like our paths crossed, even if it was a year apart.<div class="bubble-time">Jun 19</div></div>
@@ -2403,28 +2161,76 @@ function getYoungMeContent() {
     return `
         <h2 class="section-title">Young KC 👶</h2>
         <div class="message-text">
-            <p>You asked for this. No refunds. No takebacks. This is the helmet hair era.</p>
+            <p>Behold... The infamous helmet hair... Perhaps you didn't know this, but I used to be called Monkey a lot when I was younger... I'm sure you can see why... 🥹 </p>
+
+            <p>In fact... here's a funny story that my mum LOVES to tell everyone about the day I was born... The story goes that... </p>
         </div>
         <div class="photo-collage">
-            <div class="photo-item">
-                <img src="photos/young-me/young-me.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-helmet-hair.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/468723209_10160970923158668_6326145763655921587_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+            <div class="message-text">
+                <p>When I was born, my grandpa was running late to the hospital. So my mum gave birth to me. I was a fat kid and I cried the loudest... then when my grandpa finally arrived and they rushed him into the operating room where my mum was... </p>
             </div>
-            <div class="photo-item">
-                <img src="photos/young-me/young-me-2.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/518274393_10161727242823668_2287388036415566234_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/518328143_10161727245098668_7725835088647874436_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="message-text">
+            <p>He ended up running out of the room because... I was so ugly... 🤣</p>
             </div>
-            <div class="photo-item">
-                <img src="photos/young-me/young-me-3.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
+
+            <div class="message-text">
+            <p>But then.. I guess things took a small turn... I took off my glasses one day and one of my friends commented.. OH.. you're actually quite handsome! That was when I decided I wanted to transform 😊</p>
             </div>
-            <div class="photo-item">
-                <img src="photos/young-me/young-helmet-hair.jpg" alt="">
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
+
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472140628_10163444815223825_8811205107240185578_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-3.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/517038959_10163631183383336_6638570477771188899_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 18%);"></div>
+        </div>
+
+        <div class="message-text">
+            <p>My parents never knew... and I've never told them, but I've always hated those stories and it's always hurt me... </p>
+
+            <p>I would say that ever since then, I've always been incredibly concious about my journey, about constantly wanting to improve my hairstyle... my looks... </p>
+        </div>
+
+        <div class="photo-collage">
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/468705505_10162255058956118_8208258873636630024_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/468718678_10161011084771295_487116494207223372_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/471666046_10163387827198825_5978806553597552849_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472069861_10163444807708825_940960679580851649_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472214619_10163436296938825_7405157352906314350_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472362758_10163436271203825_1427688217132313953_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/473811153_10171038217980727_8457052922095860797_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/506483100_24236924085894041_1256038141779289177_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+
+        </div>
+        <div class="message-text">
+            <p>Admittedly, not every one of my hairstyles were marvelous... but looking back... I'm glad it's all worked out in the end... </p>
+        </div>
+
+        <div class="photo-collage">
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/512674088_10236245910504422_4035963716362512195_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 18%);"></div>
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/518042106_10163222202083979_761522986416699815_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/555012185_10240859024956734_4922668475087270280_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/555985330_24729707746640759_3119890568182275540_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.9) translate(-10%, 22%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/556436687_25110718731853911_4905215372515796107_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/565240731_10238058135062647_7570909868501082626_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
         </div>
         <div class="message-text" style="margin-top:1rem;">
-            <p>I peaked late. But I peaked for you. 🥹</p>
+            <p>Because whether I'm wearing a helmet hair, a duck's tail... a field of grass on my head... (yes those were all things people have said about my hair back then, hahaha! 🥹)</p>
+
+            <p>Imagine how happy I would be if all those versions of me knew that I would be sitting in a hotel room right now... waiting for the most beautiful lady in the world ☺️</p>
+
+            <p>I can't wait to finally see you 😊</p>
+
         </div>
         <div class="message-signature">, Helmet hair KC 🪖</div>
     `;
@@ -2438,159 +2244,48 @@ function getVideosContent() {
         </div>
         <div class="video-gallery">
             <div class="video-item">
-                <video src="videos/vid-her-flowers-thank-you.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-her-slime.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-her-slime.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-her-skating-fall.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-her-bowling.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-board-game-voice.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-her-skating-fall.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-birthday.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-board-game-voice.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-hair-styling-sexy.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-pool-texting.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-hair-styling-full.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-birthday.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-hair-pimple-patch.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-hair-styling-sexy.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-korean-encouragement.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-hair-styling-full.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/vid-singapore-friends.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-hair-pimple-patch.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/trying-on.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-korean-encouragement.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/trying-on-2.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-singapore-friends.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/playing-with-hair.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/vid-funny-shirt.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/keyboard.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
             <div class="video-item">
-                <video src="videos/VID-20260626-WA0011.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260626-WA0016.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260626-WA0019.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260626-WA0022.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260627-WA0003.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260627-WA0004.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260627-WA0006.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260628-WA0041.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260629-WA0024.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260705-WA0011.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260705-WA0012.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260711-WA0003.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260718-WA0031.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260718-WA0034.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260718-WA0035.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260718-WA0037.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260720-WA0001.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260722-WA0039.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260803-WA0029.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260804-WA0005.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260805-WA0002.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260805-WA0003.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260807-WA0016.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260807-WA0018.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
-            </div>
-            <div class="video-item">
-                <video src="videos/VID-20260808-WA0030.mp4" controls preload="none"></video>
-                <div class="photo-caption"><!-- CAPTION --></div>
+                <video src="videos/funny-shirt.mp4#t=0.1" controls preload="metadata" playsinline></video>
             </div>
         </div>
-        <div class="message-signature">, KC 🎬</div>
     `;
 }
 
@@ -2622,7 +2317,7 @@ function getTimelineContent() {
             <div class="timeline-item"><div class="timeline-date">Jul 7</div><div class="timeline-text">Mom hid her Alo pants. Mushroom hair confession.</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 10</div><div class="timeline-text">"Why are you hiding these pictures from me!! 😭"</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 13</div><div class="timeline-text">She called him 자기야 for the first time</div></div>
-            <div class="timeline-item"><div class="timeline-date">Jul 18</div><div class="timeline-text">First Korean voice note exchange</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 18</div><div class="timeline-text">First  voice note exchange</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 26</div><div class="timeline-text">Sticker war begins. Bikini sticker incident. "I hate you 😤"</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 27</div><div class="timeline-text">"Whats in your porcket?!" - a game is born</div></div>
             <div class="timeline-item"><div class="timeline-date">Aug 9</div><div class="timeline-text">"We're both just as lucky we crossed paths ❤️"</div></div>
@@ -2650,30 +2345,12 @@ function getStickersContent() {
             <div class="sticker-item"><img src="stickers/sticker-are-you-kidding.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-bikini-hair.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-cute-me.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/sticker-her-bikini.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-her-red-dress.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-hungry-feed-me.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-me-no-phone.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-puff-hair.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-send-pictures.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
             <div class="sticker-item"><img src="stickers/sticker-silly-chair-pout.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/sticker1.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/sticker2.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/sticker3.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260726-WA0045.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260727-WA0046.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260729-WA0012.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260730-WA0006.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260730-WA0027.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260730-WA0028.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260802-WA0034.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260803-WA0005.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260803-WA0006.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260803-WA0008.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260805-WA0017.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260805-WA0018.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260805-WA0027.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
-            <div class="sticker-item"><img src="stickers/STK-20260805-WA0044.webp" alt=""><div class="photo-caption"><!-- CAPTION --></div></div>
         </div>
         <div class="message-signature">- The guy you keep turning into stickers 😤</div>
     `;
@@ -2693,9 +2370,9 @@ function getCrosswordContent() {
         [' ',' ',' ','L',' ','V',' ',' ',' ',' ',' ',' '],
         ['S','A','P','P','O','R','O',' ',' ',' ',' ',' '],
         [' ',' ',' ','O',' ','N',' ',' ',' ',' ',' ',' '],
-        [' ',' ','P','I','N','K',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
         [' ',' ',' ','N',' ',' ',' ',' ',' ',' ',' ',' '],
-        [' ','V','I','O','L','I','N',' ',' ',' ',' ',' '],
+        [' ',' ',' ','O',' ',' ',' ',' ',' ',' ',' ',' '],
         ['C','O','D','E','N','A','M','E','S',' ',' ',' '],
     ];
 
@@ -2703,8 +2380,6 @@ function getCrosswordContent() {
         across: [
             { num: 3, clue: "The spicy noodles she eats 3x a week (6)", row: 2, col: 1 },
             { num: 5, clue: "City in Japan where our paths crossed (7)", row: 4, col: 0 },
-            { num: 7, clue: "Her favorite color (4)", row: 6, col: 2 },
-            { num: 9, clue: "Her instrument (6)", row: 8, col: 1 },
             { num: 10, clue: "The board game KC always wins (9)", row: 9, col: 0 },
         ],
         down: [

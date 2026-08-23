@@ -43,6 +43,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    overscroll-behavior: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -594,6 +595,7 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
     margin: 1.5rem 0;
+    align-items: start;
 }
 
 .photo-item {
@@ -608,12 +610,38 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
+    transform-origin: center center;
 }
 
 .photo-item.wide {
     grid-column: span 2;
     aspect-ratio: 16/9;
+}
+
+.photo-item.tall {
+    grid-column: span 2;
+    aspect-ratio: auto;
+    max-height: 60vh;
+}
+.photo-item.tall img {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    object-position: center center;
+}
+.photo-item.tall .locked-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.photo-item.tall .locked-photo img {
+    max-height: 60vh;
 }
 
 .photo-caption {
@@ -627,6 +655,9 @@ body {
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1.3;
+}
+.photo-caption:empty {
+    display: none;
 }
 
 /* Audio Player */
@@ -1199,20 +1230,30 @@ body {
     box-shadow: 0 2px 8px rgba(255,107,157,0.08);
     -webkit-appearance: none;
     appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
-.choice-btn:hover {
-    border-color: #ff9ec4;
-    background: linear-gradient(135deg, #fff5f9 0%, #ffecf3 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,107,157,0.15);
+@media (hover: hover) {
+    .choice-btn:hover {
+        border-color: #ff9ec4;
+        background: linear-gradient(135deg, #fff5f9 0%, #ffecf3 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255,107,157,0.15);
+    }
 }
 .choice-btn:active {
     transform: scale(0.97);
 }
 .choice-btn.choice-wrong {
-    border-color: #ff4444;
-    background: #fff0f0;
+    border-color: #ff4444 !important;
+    background: #fff0f0 !important;
     animation: shake 0.4s ease-in-out;
+}
+.choice-btn.choice-correct {
+    border-color: #4caf50 !important;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%) !important;
+    animation: celebrateChoice 0.6s ease;
+    pointer-events: none;
 }
 .choice-input {
     width: 100%;
@@ -1232,7 +1273,7 @@ body {
 /* Global music button — always visible */
 .music-btn-global {
     position: fixed;
-    bottom: calc(1.2rem + env(safe-area-inset-bottom));
+    bottom: 1.2rem;
     right: 1.2rem;
     z-index: 999999;
     width: 44px;
@@ -1244,15 +1285,12 @@ body {
     font-size: 1.3rem;
     cursor: pointer;
     backdrop-filter: blur(8px);
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
-/* Correct choice animation */
-.choice-btn.choice-correct {
-    border-color: #4caf50;
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    animation: celebrateChoice 0.6s ease;
-    pointer-events: none;
-}
 @keyframes celebrateChoice {
     0% { transform: scale(1); }
     20% { transform: scale(1.05); }
@@ -1305,11 +1343,18 @@ body {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    margin: 1rem 0;
     cursor: pointer;
+    line-height: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .locked-photo img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
     display: block;
     filter: blur(20px);
     transform: scale(1.1);
@@ -1396,18 +1441,25 @@ body {
     padding: 0.4rem 0;
     padding-left: 1.5rem;
     position: relative;
+    min-height: 1.4em;
+    line-height: 1.4;
 }
 .bucket-item::before {
     content: '☐';
     position: absolute;
     left: 0;
+    font-size: 1em;
+    width: 1.2em;
+    text-align: center;
 }
 .bucket-item.checked {
     text-decoration: line-through;
     opacity: 0.5;
 }
 .bucket-item.checked::before {
-    content: '☑️';
+    content: '✓';
+    color: #4caf50;
+    font-weight: 700;
 }
 
 /* Let taps pass through captions to hit the image */
@@ -1429,4 +1481,129 @@ body {
 }
 .photo-message:empty {
     display: none;
+}
+
+/* Video gallery */
+.video-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.video-item {
+    width: 100%;
+}
+.video-item video {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+}
+.video-item .photo-caption {
+    margin-top: 0.4rem;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+    border-left: 3px solid #ffd3e2;
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.2rem;
+    padding-left: 1rem;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.65rem;
+    top: 0.45rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff6b9d;
+}
+.timeline-date {
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: #ff6b9d;
+    margin-bottom: 0.15rem;
+}
+.timeline-text {
+    font-size: 0.9rem;
+    color: #4a3040;
+    line-height: 1.4;
+}
+
+/* Sticker grid */
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+}
+.sticker-item {
+    text-align: center;
+}
+.sticker-item img {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+/* Crossword */
+.crossword-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+    width: 100%;
+    margin: 0 0 1rem;
+}
+.cw-cell {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    min-width: 0;
+}
+.cw-blank {
+    background: transparent;
+    border: none;
+}
+.cw-active {
+    background: #fff;
+    border: 2px solid #ffd3e2;
+}
+.cw-num {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #8b6b7a;
+    line-height: 1;
+}
+.cw-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: 'Nunito', sans-serif;
+    outline: none;
+    padding: 0;
+}
+.cw-clues {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.8rem;
+    color: #4a3040;
+    margin-top: 1rem;
+}
+.cw-clue-section {
+    flex: 1;
+}
+.cw-clue {
+    margin: 0.3rem 0;
+    line-height: 1.3;
 }
