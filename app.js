@@ -6,7 +6,7 @@
 // COUNTDOWN LOCK , Unlocks Aug 23, 2025
 // ==========================================
 
-const UNLOCK_TIMESTAMP = Date.now() + 10000; // LOCAL: 10 sec. PROD: 1787471100000
+const UNLOCK_TIMESTAMP = 0; // TESTING: no lock. PROD: 1787471100000
 
 // Server time offset to prevent phone clock cheating
 let serverTimeOffset = 0;
