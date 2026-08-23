@@ -244,6 +244,7 @@
             overlay.style.display = 'none';
             document.getElementById('landing').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            localStorage.setItem('precacheDone', 'true');
         });
 
         // Run precache

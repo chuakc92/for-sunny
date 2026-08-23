@@ -150,19 +150,13 @@ function updateCountdownTimer() {
 }
 
 function showPrecache() {
-    // Only precache once, then go straight to landing
     if (localStorage.getItem('precacheDone')) {
         document.getElementById('landing').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         return;
     }
     var overlay = document.getElementById('precache-overlay');
-    if (!navigator.onLine) {
-        document.getElementById('landing').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        return;
-    }
-    if (!overlay) {
+    if (!navigator.onLine || !overlay) {
         document.getElementById('landing').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         return;
