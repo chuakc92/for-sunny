@@ -257,6 +257,12 @@
             });
         }
         function run() {
+            if (localStorage.getItem('precacheDone')) {
+                overlay.style.display = 'none';
+                document.getElementById('landing').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
             var chain = Promise.resolve();
             ASSETS.forEach(function(url) { chain = chain.then(function() { return step(url); }); });
             chain.then(finish);
