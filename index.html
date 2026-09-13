@@ -2,6 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>
+    /* ==========================================
+       CACHE NUKE , runs before anything else.
+       Kills every leftover service worker + cache from the old
+       flight/airplane-mode version, then forces ONE hard reload so
+       the next paint is guaranteed fresh. Guarded so it never loops.
+       ========================================== */
+    (function () {
+        var swPromise = ('serviceWorker' in navigator)
+            ? navigator.serviceWorker.getRegistrations()
+                .then(function (regs) { return Promise.all(regs.map(function (r) { return r.unregister(); })); })
+                .catch(function () {})
+            : Promise.resolve();
+
+        var cachePromise = ('caches' in window)
+            ? caches.keys()
+                .then(function (keys) { return Promise.all(keys.map(function (k) { return caches.delete(k); })); })
+                .catch(function () {})
+            : Promise.resolve();
+
+        // Only reload once per session, and only if there was actually
+        // something to clean up (a controlling service worker present).
+        var hadSW = ('serviceWorker' in navigator) && !!navigator.serviceWorker.controller;
+        if (hadSW && !sessionStorage.getItem('cacheNuked')) {
+            sessionStorage.setItem('cacheNuked', '1');
+            Promise.all([swPromise, cachePromise]).then(function () {
+                location.reload(true);
+            });
+        }
+    })();
+    </script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -103,20 +134,6 @@
     <canvas id="confetti-canvas"></canvas>
     <button class="music-btn music-btn-global" id="music-btn-global" onclick="toggleMusic()">🎵</button>
     <audio id="bg-music" src="audio/you-and-me.mp3" preload="auto"></audio>
-    <script>
-        // No more offline caching , she's online now. Clean up any old service
-        // worker + caches left over from the flight (airplane-mode) version.
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations()
-                .then(function (regs) { regs.forEach(function (r) { r.unregister(); }); })
-                .catch(function () {});
-        }
-        if ('caches' in window) {
-            caches.keys()
-                .then(function (keys) { keys.forEach(function (k) { caches.delete(k); }); })
-                .catch(function () {});
-        }
-    </script>
     <script src="confetti.min.js"></script>
     <script src="app.js"></script>
 </body>

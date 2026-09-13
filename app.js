@@ -2229,11 +2229,11 @@ function getTimelineContent() {
             <div class="timeline-item"><div class="timeline-date">Aug 28</div><div class="timeline-text">Sunny suprises KC in Austin!!</div></div>
             <div class="timeline-item"><div class="timeline-date">Aug 28</div><div class="timeline-text">Sunny's first clubbing experience 💃</div></div>
             <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">Our first full trip to Houston together 📷</div></div>
-            <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">Our first proper date 💘💐</div></div>
+            <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">Our first proper date at Toca Madera 💘💐</div></div>
             <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">고백 👩🏻‍❤️‍👨🏻</div></div>
             <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">1일!!!</div></div>
         </div>
-        <div class="message-signature">- KC 📅</div>
+        <div class="message-signature">- Officially, your KC ❤️</div>
     `;
 }
 
