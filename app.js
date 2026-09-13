@@ -479,7 +479,7 @@ const envelopes = [
         id: 'cant-sleep',
         emoji: '📅',
         title: "You Want to Relive Our Story",
-        subtitle: 'June 11 to August 23.',
+        subtitle: 'Every moment of our relationship',
         question: "What time was it for KC during our first real-time conversation?",
         hint: "KC refused to sleep... you kept telling him to go to bed 😤",
         answers: ['3am', '4am', '3', '4'],
@@ -2198,7 +2198,7 @@ function getVideosContent() {
 function getTimelineContent() {
     return `
         <h2 class="section-title">Our Story 📅</h2>
-        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.85rem;">June 11 to August 23. Every moment that led us here.</p>
+        <p style="text-align:center; color:#8b6b7a; margin-bottom:1.5rem; font-size:0.85rem;">Every moment of our relationship</p>
         <div class="timeline">
             <div class="timeline-item"><div class="timeline-date">Jun 11</div><div class="timeline-text">"Hi! It's me. Sunny! 😊" - it all begins</div></div>
             <div class="timeline-item"><div class="timeline-date">Jun 12</div><div class="timeline-text">"Drink a good boba tea for me please 🥹"</div></div>
@@ -2219,14 +2219,19 @@ function getTimelineContent() {
             <div class="timeline-item"><div class="timeline-date">Jul 7</div><div class="timeline-text">Mom hid her Alo pants. Mushroom hair confession.</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 10</div><div class="timeline-text">"Why are you hiding these pictures from me!! 😭"</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 13</div><div class="timeline-text">She called him 자기야 for the first time</div></div>
-            <div class="timeline-item"><div class="timeline-date">Jul 18</div><div class="timeline-text">First  voice note exchange</div></div>
+            <div class="timeline-item"><div class="timeline-date">Jul 18</div><div class="timeline-text">First voice note exchange</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 26</div><div class="timeline-text">Sticker war begins. Bikini sticker incident. "I hate you 😤"</div></div>
             <div class="timeline-item"><div class="timeline-date">Jul 27</div><div class="timeline-text">"Whats in your porcket?!" - a game is born</div></div>
             <div class="timeline-item"><div class="timeline-date">Aug 9</div><div class="timeline-text">"We're both just as lucky we crossed paths ❤️"</div></div>
             <div class="timeline-item"><div class="timeline-date">Aug 23</div><div class="timeline-text">✈️ The countdown hits zero.</div></div>
-        </div>
-        <div class="message-text" style="margin-top:1.5rem;">
-            <p>74 days. Thousands of messages. One timezone away from forever. ☺️</p>
+            <div class="timeline-item"><div class="timeline-date">Aug 23</div><div class="timeline-text">We met in Dallas for the first time! ❤️</div></div>
+            <div class="timeline-item"><div class="timeline-date">Aug 24</div><div class="timeline-text">We said goodbye in person for the first time 😭</div></div>
+            <div class="timeline-item"><div class="timeline-date">Aug 28</div><div class="timeline-text">Sunny suprises KC in Austin!!</div></div>
+            <div class="timeline-item"><div class="timeline-date">Aug 28</div><div class="timeline-text">Sunny's first clubbing experience 💃</div></div>
+            <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">Our first full trip to Houston together 📷</div></div>
+            <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">Our first proper date 💘💐</div></div>
+            <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">고백 👩🏻‍❤️‍👨🏻</div></div>
+            <div class="timeline-item"><div class="timeline-date">Sep 5</div><div class="timeline-text">1일!!!</div></div>
         </div>
         <div class="message-signature">- KC 📅</div>
     `;
