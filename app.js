@@ -97,31 +97,9 @@ const FLOWER_GIFT_URL = 'https://sodagift.com/ko/welcome/gift-links/2229133?t=3k
 let lockedTapCount = 0;
 
 function initCountdown() {
-    const DEV_LOCK = false;
-
-    // Flight version always skips the lock
-    const isFlight = location.pathname.includes('/flight');
-    if (isFlight) {
-        document.getElementById('locked-page').classList.add('hidden');
-        document.getElementById('landing').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        return;
-    }
-
-    // Check if already unlocked
-    const now = getTrueNow();
-    if (!DEV_LOCK && now >= UNLOCK_TIMESTAMP) {
-        document.getElementById('locked-page').classList.add('hidden');
-        showPrecache();
-        return;
-    }
-
-    // Show locked page with countdown
-    document.getElementById('locked-page').classList.remove('hidden');
-    document.getElementById('landing').classList.add('hidden');
-    document.body.style.overflow = 'hidden';
-    updateCountdownTimer();
-    window._countdownInterval = setInterval(updateCountdownTimer, 1000);
+    // One front page: the "days together" counter, which leads into the Open When grid.
+    document.getElementById('locked-page').classList.add('hidden');
+    showPrecache();
 }
 
 function updateCountdownTimer() {
@@ -152,6 +130,31 @@ function updateCountdownTimer() {
 function showPrecache() {
     document.getElementById('landing').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    startTogetherCounter();
+}
+
+// ==========================================
+// TOGETHER COUNTER , counts UP in days from 9/5
+// ==========================================
+// Start of Sep 5 (local time). Year 2025 = when we became official.
+const TOGETHER_START = new Date(2026, 8, 5, 0, 0, 0, 0).getTime(); // month is 0-indexed: 8 = September
+
+function updateTogetherCounter() {
+    const numEl = document.getElementById('together-number');
+    const unitEl = document.getElementById('together-unit');
+    if (!numEl) return;
+    const now = getTrueNow();
+    const days = Math.floor((now - TOGETHER_START) / (1000 * 60 * 60 * 24));
+    const dayCount = days < 0 ? 0 : days;
+    numEl.textContent = dayCount;
+    if (unitEl) unitEl.textContent = dayCount === 1 ? 'day' : 'days';
+}
+
+function startTogetherCounter() {
+    updateTogetherCounter();
+    if (window._togetherInterval) clearInterval(window._togetherInterval);
+    // Update once an hour is plenty since we only show whole days
+    window._togetherInterval = setInterval(updateTogetherCounter, 60 * 1000);
 }
 
 function tapLocked() {
@@ -624,50 +627,23 @@ function renderEnvelopes() {
     grid.innerHTML = '';
 
     envelopes.forEach(env => {
-        // Hide final/secret envelope until all others opened
-        if (env.isFinal) {
-            const allOthersOpened = envelopes
-                .filter(e => !e.isFinal)
-                .every(e => openedEnvelopes.includes(e.id));
-            if (!allOthersOpened && !openedEnvelopes.includes(env.id)) {
-                return;
-            }
-        }
-
+        // Everything is unlocked now , show every envelope including the final one.
         const card = document.createElement('div');
         card.className = 'envelope-card';
         if (openedEnvelopes.includes(env.id)) card.classList.add('opened');
         if (env.isFinal) {
             card.classList.add('final-envelope');
-            if (!openedEnvelopes.includes(env.id)) {
-                card.classList.add('glow');
-            }
         }
 
         const isOpened = openedEnvelopes.includes(env.id);
-
-        // Time-locked envelope with countdown on the card
-        let subtitleHTML = env.subtitle;
-        if (env.timeLocked && !isOpened) {
-            const now = getTrueNow();
-            if (now < env.unlockTimestamp) {
-                const diff = env.unlockTimestamp - now;
-                const h = Math.floor(diff / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-                subtitleHTML = '<span class="time-lock-countdown" data-unlock="' + env.unlockTimestamp + '">🔒 ' + h + 'h ' + m + 'm ' + s + 's</span>';
-            } else {
-                subtitleHTML = 'Ready to open ☺️';
-            }
-        }
 
         card.innerHTML = `
             <span class="envelope-emoji">${env.emoji}</span>
             <div class="envelope-info">
                 <div class="envelope-title">Open When ${env.title}</div>
-                <div class="envelope-subtitle">${subtitleHTML}</div>
+                <div class="envelope-subtitle">${env.subtitle}</div>
             </div>
-            <span class="envelope-lock">${isOpened ? '💗' : (env.timeLocked && !isOpened ? '⏳' : '🔒')}</span>
+            <span class="envelope-lock">${isOpened ? '💗' : '💌'}</span>
         `;
 
         card.addEventListener('click', () => openEnvelope(env.id));
@@ -675,7 +651,6 @@ function renderEnvelopes() {
     });
 
     updateProgress();
-    startTimeLockCountdowns();
 }
 
 function startTimeLockCountdowns() {
@@ -699,7 +674,8 @@ function startTimeLockCountdowns() {
 }
 
 function updateProgress() {
-    document.getElementById('opened-count').textContent = openedEnvelopes.length;
+    const el = document.getElementById('opened-count');
+    if (el) el.textContent = openedEnvelopes.length;
 }
 
 // ==========================================
@@ -728,77 +704,13 @@ function openEnvelope(id) {
     const env = envelopes.find(e => e.id === id);
     if (!env) return;
 
-    if (openedEnvelopes.includes(id)) {
-        // Already opened, show content directly
-        showEnvelopeContent(env);
-        return;
+    // Everything is unlocked now , no questions, no time locks. Just open it.
+    if (!openedEnvelopes.includes(id)) {
+        openedEnvelopes.push(id);
+        localStorage.setItem('openedEnvelopes', JSON.stringify(openedEnvelopes));
     }
-
-    // Time-locked envelope, no question needed
-    if (env.timeLocked) {
-        const now = getTrueNow();
-        if (now < env.unlockTimestamp) {
-            // Still locked, show countdown
-            const diff = env.unlockTimestamp - now;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            document.body.style.overflow = 'hidden';
-            currentEnvelopeId = id;
-            document.getElementById('password-question').textContent = "Not yet, 자기야 ☺️";
-            document.getElementById('password-hint').textContent = "Unlocks in " + hours + "h " + minutes + "m";
-            const grid = document.getElementById('choices-grid');
-            grid.innerHTML = '<p style="text-align:center; color:#8b6b7a; font-size:0.9rem;">This one opens when you land 🛬</p>';
-            document.getElementById('password-error').classList.add('hidden');
-            document.getElementById('password-modal').classList.remove('hidden');
-            return;
-        } else {
-            // Time passed, unlock it
-            if (!openedEnvelopes.includes(id)) {
-                openedEnvelopes.push(id);
-                localStorage.setItem('openedEnvelopes', JSON.stringify(openedEnvelopes));
-            }
-            showEnvelopeContent(env);
-            renderEnvelopes();
-            return;
-        }
-    }
-
-    // Lock background scroll
-    document.body.style.overflow = 'hidden';
-
-    // Show multiple choice prompt (or text input for the final in-person envelope)
-    currentEnvelopeId = id;
-    document.getElementById('password-question').textContent = env.question;
-    document.getElementById('password-hint').textContent = env.hint || '';
-    document.getElementById('password-error').classList.add('hidden');
-
-    // Render choice buttons (or text input for 'with-me')
-    const grid = document.getElementById('choices-grid');
-    grid.innerHTML = '';
-
-    if (env.id === 'with-me') {
-        // Special: text input , she has to say it to his face and type it
-        grid.innerHTML = `
-            <input type="text" id="password-input" class="choice-input" placeholder="Type your answer..." autocomplete="off" autocapitalize="none">
-            <button class="unlock-btn" onclick="checkTypedAnswer()">Unlock 💗</button>
-        `;
-        setTimeout(() => document.getElementById('password-input').focus(), 400);
-        // Handle enter key
-        setTimeout(() => {
-            const inp = document.getElementById('password-input');
-            if (inp) inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkTypedAnswer(); } });
-        }, 100);
-    } else {
-        env.choices.forEach((choice, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'choice-btn';
-            btn.textContent = choice;
-            btn.addEventListener('click', () => pickChoice(idx));
-            grid.appendChild(btn);
-        });
-    }
-
-    document.getElementById('password-modal').classList.remove('hidden');
+    showEnvelopeContent(env);
+    renderEnvelopes();
 }
 
 function checkTypedAnswer() {
@@ -878,6 +790,9 @@ function showEnvelopeContent(env) {
     const modal = document.getElementById('envelope-modal');
     const body = document.getElementById('modal-body');
     body.innerHTML = window[env.content]();
+    // Everything is unlocked now , reveal any locked photos and hide their questions.
+    body.querySelectorAll('.locked-photo').forEach(lp => lp.classList.add('unlocked'));
+    body.querySelectorAll('.photo-question').forEach(q => q.classList.add('hidden'));
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     // Scroll to top of the modal content
@@ -1867,21 +1782,19 @@ function getPhotosContent() {
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/drunk-me-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 17%);"></div>
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/drunk-me-3.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
             <div class="photo-item" style="aspect-ratio:1/1;"><div class="locked-photo" onclick="unlockPhoto(this, 'neverseen-photoshoot-q')"><img src="photos/neverseen-photoshoot.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"><div class="locked-photo-overlay"><span class="lock-emoji">🔒</span><p>Tap to unlock</p></div></div></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/pimple-patch (2).jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -23%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/apple (2).jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260615-WA0005.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260615-WA0009.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -23%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260622-WA0000.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260628-WA0015.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260710-WA0008.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260722-WA0051.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260722-WA0058.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260723-WA0002.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260724-WA0017.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260724-WA0021.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260727-WA0016.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260727-WA0029.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/IMG-20260806-WA0009.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-1.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -23%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-3.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-4.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-5.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-7.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-8.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-9.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-10.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-12.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-13.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-14.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/photo-diary-15.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
         </div>
         <div id="neverseen-farm-tomita-q" class="photo-question hidden"><div class="photo-question-inner">
             <p style="font-weight:700; margin-bottom:0.8rem;">What flavor ice cream did KC eat at Farm Tomita?</p>
@@ -2080,11 +1993,11 @@ function getBathroomContent() {
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/work-cap-lazy.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/banana-republic-jacket.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/sticker-no-phone.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260718-WA0016.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260721-WA0009.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260727-WA0022.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260803-WA0012.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/IMG-20260810-WA0006.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/bathroom-selfie-1.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/bathroom-selfie-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/bathroom-selfie-3.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/bathroom-selfie-4.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/bathroom-selfies/bathroom-selfie-5.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -20%);"></div>
         </div>
         <div class="message-text">
             <p>But these became one of my favorite past times... to purposely hide things around the area or in my pockets for you to spot! Can you still spot all of them without me pointing them out? 🤣</p>
@@ -2156,12 +2069,12 @@ function getYoungMeContent() {
         </div>
         <div class="photo-collage">
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-helmet-hair.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/468723209_10160970923158668_6326145763655921587_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-6.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
             <div class="message-text">
                 <p>When I was born, my grandpa was running late to the hospital. So my mum gave birth to me. I was a fat kid and I cried the loudest... then when my grandpa finally arrived and they rushed him into the operating room where my mum was... </p>
             </div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/518274393_10161727242823668_2287388036415566234_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/518328143_10161727245098668_7725835088647874436_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-18.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-19.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
             <div class="message-text">
             <p>He ended up running out of the room because... I was so ugly... 🤣</p>
             </div>
@@ -2171,12 +2084,12 @@ function getYoungMeContent() {
             </div>
 
 
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472140628_10163444815223825_8811205107240185578_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-10.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
 
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-2.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
             <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-3.jpg" alt="" style="object-position:50% 50%; transform:scale(1.6) translate(0%, 17%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/517038959_10163631183383336_6638570477771188899_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 18%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-16.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 18%);"></div>
         </div>
 
         <div class="message-text">
@@ -2186,17 +2099,17 @@ function getYoungMeContent() {
         </div>
 
         <div class="photo-collage">
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/468705505_10162255058956118_8208258873636630024_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/468718678_10161011084771295_487116494207223372_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-4.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-5.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
 
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/471666046_10163387827198825_5978806553597552849_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472069861_10163444807708825_940960679580851649_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-8.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-9.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
 
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472214619_10163436296938825_7405157352906314350_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/472362758_10163436271203825_1427688217132313953_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-11.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-12.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, -10%);"></div>
 
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/473811153_10171038217980727_8457052922095860797_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/506483100_24236924085894041_1256038141779289177_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-13.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-14.jpg" alt="" style="object-position:50% 50%; transform:scale(1.4) translate(0%, 10%);"></div>
 
         </div>
         <div class="message-text">
@@ -2204,14 +2117,14 @@ function getYoungMeContent() {
         </div>
 
         <div class="photo-collage">
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/512674088_10236245910504422_4035963716362512195_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 18%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-15.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 18%);"></div>
 
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/518042106_10163222202083979_761522986416699815_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-17.jpg" alt="" style="object-position:50% 50%; transform:scale(1) translate(0%, 0%);"></div>
 
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/555012185_10240859024956734_4922668475087270280_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/555985330_24729707746640759_3119890568182275540_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.9) translate(-10%, 22%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/556436687_25110718731853911_4905215372515796107_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
-            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/565240731_10238058135062647_7570909868501082626_n.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-20.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-21.jpg" alt="" style="object-position:50% 50%; transform:scale(1.9) translate(-10%, 22%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-22.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
+            <div class="photo-item" style="aspect-ratio:1/1;"><img src="photos/young-me/young-me-23.jpg" alt="" style="object-position:50% 50%; transform:scale(1.5) translate(0%, 15%);"></div>
         </div>
         <div class="message-text" style="margin-top:1rem;">
             <p>Because whether I'm wearing a helmet hair, a duck's tail... a field of grass on my head... (yes those were all things people have said about my hair back then, hahaha! 🥹)</p>
@@ -2476,11 +2389,8 @@ document.addEventListener('click', function (e) {
 // ==========================================
 
 function unlockPhoto(photoEl, questionId) {
-    if (photoEl.classList.contains('unlocked')) return;
-    var q = document.getElementById(questionId);
-    if (!q) return;
-    // Show as a centered popup
-    q.classList.remove('hidden');
+    // Everything is unlocked now , tapping just reveals the photo, no question.
+    photoEl.classList.add('unlocked');
 }
 
 function checkPhotoAnswer(btn, isCorrect) {
